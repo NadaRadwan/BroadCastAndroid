@@ -3,8 +3,10 @@ package com.example.nada.broadcast;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,15 +22,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +47,9 @@ public class LoginActivity extends AppCompatActivity {
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "admin@admin.com:admin", "admin1@admin1.com;admin1"
-    };
+//    private static final String[] DUMMY_CREDENTIALS = new String[]{
+//            "admin@admin.com:admin", "admin1@admin1.com;admin1"
+//    };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      * This is a thread
@@ -54,37 +57,41 @@ public class LoginActivity extends AppCompatActivity {
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private EditText mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
+    DatabaseHelper myDB; //store instance of Broadcast database
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        //creating an instance of the Broadcast database
+        myDB = new DatabaseHelper(this);
+
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-
-
+        mEmailView = (EditText) findViewById(R.id.userId);
         mPasswordView = (EditText) findViewById(R.id.password);
 
         //ANOTHER WAY TO DO THIS IS BY SETTING ONCLICK ON THE BUTTON IN THE XML FILE
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
-
+        mEmailSignInButton.setOnClickListener(
+                new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    attemptLogin();
+                }
+            });
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
 
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
+     * Attempts to sign in the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
@@ -98,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String userId = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -112,12 +119,12 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(userId)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
+        } else if (!isEmailValid(userId)) {
+            mEmailView.setError(getString(R.string.error_userId));
             focusView = mEmailView;
             cancel = true;
         }
@@ -130,18 +137,17 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password); //create thread
+            mAuthTask = new UserLoginTask(userId, password); //create thread
             mAuthTask.execute(); //start thread
         }
     }
 
-    private boolean isEmailValid(String email) {
+    private boolean isEmailValid(String userid) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return userid.length()>4;
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
@@ -181,6 +187,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    public void register(View view){
+        Intent i = new Intent(LoginActivity.this, RegisterPage.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+        startActivity(i); //navigates to the next page (RegisterPage)
+    }
     /**
      * Represents an asynchronous login/registration task used to authenticate the user.
      * AsyncTask enables proper and easy use of the UI thread.
@@ -202,7 +212,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-            boolean validCred=false;
+            boolean validCred = false;
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
@@ -210,18 +220,25 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    validCred= pieces[1].equals(mPassword);
+            User u= myDB.getUser(mEmail); //retrieving the user with the entered email
+
+            if(u==null){ //there is no such user
+                Log.d("loginActivity","there is no such user");
+                return false;
+            }else {
+                String validPassword = u.getPassword();
+                if (mPassword.equals(validPassword)) { //check if correct password was entered
+                    Log.d("loginActivity","valid password");
+                    return true;
+                } else {
+                    Log.d("loginActivity","invalid password");
+                    return false;
                 }
             }
-
-            // TODO: register the new account here.
-            return validCred;
         }
 
+
+//
         /*
          *  invoked on the UI thread after the background computation finishes.
          *  The result of the background computation is passed to this step as a parameter (success).
@@ -235,6 +252,7 @@ public class LoginActivity extends AppCompatActivity {
 
             if (success) {
                 Intent i = new Intent(LoginActivity.this, HomePage.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+                i.putExtra("user", myDB.getUser(mEmailView.getText().toString()).getName());
                 startActivity(i); //navigates to the next page (summary)
             } else {
                 mEmailView.setError(getString(R.string.error_invalid_credentials));

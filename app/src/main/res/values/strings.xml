@@ -3,15 +3,14 @@
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
+    <string name="prompt_userId">User ID</string>
+    <string name="prompt_userName">First Name</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">Invalid email address</string>
-    <string name="error_invalid_password">Password is too short</string>
-    <string name="error_incorrect_password">Incorrect Password</string>
+    <string name="prompt_rePassword">Re-enter Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Register</string>
+    <string name="error_userId">User Id is too short (min 5 characters)</string>
+    <string name="error_invalid_password">Password is too short (min 5 characters)</string>
     <string name="error_field_required">Field Required</string>
     <string name="error_invalid_credentials">Invalid username/password combination</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
 </resources>

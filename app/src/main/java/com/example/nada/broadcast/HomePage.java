@@ -15,11 +15,21 @@ import java.io.IOException;
 public class HomePage extends AppCompatActivity implements MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener {
 
     private MediaPlayer player;
+    DatabaseHelper myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+
+        //creating an instance of the Broadcast database
+        myDB = new DatabaseHelper(this);
+           /*
+         * extracting the retrieved values (user) and getting his name converting it to string
+         */
+        Bundle passedParams = getIntent().getExtras(); //bundle to retrieve the values passed from the first activity
+        String name= (passedParams.getString("user").toString());
+        Toast.makeText(getApplicationContext(), "Welcome "+name+"!", Toast.LENGTH_SHORT).show();
     }
 
     /*
@@ -59,7 +69,7 @@ public class HomePage extends AppCompatActivity implements MediaPlayer.OnErrorLi
         player = new MediaPlayer();
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            player.setDataSource("http://www.mfiles.co.uk/mp3-downloads/as-with-gladness-men-of-old.mp3");
+            player.setDataSource("http://www.surfmusic.de/radio-station/cbc-1-halifax,110.html");
             player.setOnErrorListener(this);
             player.setOnPreparedListener(this);
             player.prepareAsync();
