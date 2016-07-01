@@ -13,4 +13,10 @@
     <string name="error_invalid_password">Password is too short (min 5 characters)</string>
     <string name="error_field_required">Field Required</string>
     <string name="error_invalid_credentials">Invalid username/password combination</string>
+    <string name="title_activity_navigation_bar">NavigationBar</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>
