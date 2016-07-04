@@ -41,10 +41,10 @@
                 <!-- textEmailAddress: Normal text keyboard with the @ character.-->
                 <!--hints are defined in the values/strings folder=-->
                 <AutoCompleteTextView
-                    android:id="@+id/userId"
+                    android:id="@+id/email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/prompt_userId"
+                    android:hint="@string/prompt_email"
                     android:inputType="text"
                     android:maxLines="1"
                     android:singleLine="true" /><!--instead of making text wrap on multiple lines-->

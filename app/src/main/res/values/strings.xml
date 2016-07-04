@@ -3,8 +3,7 @@
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
-    <string name="prompt_userId">User ID</string>
-    <string name="prompt_userName">First Name</string>
+    <string name="prompt_userName">User Name</string>
     <string name="prompt_password">Password</string>
     <string name="prompt_rePassword">Re-enter Password</string>
     <string name="action_sign_in">Sign in</string>
