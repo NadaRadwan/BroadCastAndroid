@@ -37,47 +37,32 @@ public class UserProfile extends AppCompatActivity implements MediaPlayer.OnErro
 
         //populating the user rating
         final TextView rating = (TextView) findViewById(R.id.rating);
+        final TextView welcome = (TextView) findViewById(R.id.welcome);
 
         // Get a reference to our posts
-//        Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/users/");
-//        Query queryRef = userRef.orderByChild("email").equalTo(getIntent().getExtras().getString("email")); //loking for user with specified email address
-//
-//        queryRef.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot snapshot, String previousChild) {
-//                User u=snapshot.getValue(User.class);
-//                System.out.println(u.getRating());
-//            }
-//            @Override
-//            public void onCancelled(FirebaseError firebaseError) {
-//                System.out.println("The read failed: " + firebaseError.getMessage());
-//            }
-//
-//            // Get the data on a post that has been removed
-//            @Override
-//            public void onChildRemoved(DataSnapshot snapshot) {}
-//
-//            // Get the data on a post that has changed
-//            @Override
-//            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {}
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
-//        });
-//        queryRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot snapshot) {
-//                System.out.println(snapshot.getValue());
-//                System.out.println(snapshot.getChildren().iterator().next().getValue("rating"));
-//            }
-//            @Override
-//            public void onCancelled(FirebaseError firebaseError) {
-//                System.out.println("The read failed: " + firebaseError.getMessage());
-//            }
-//        });
+        Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/users/");
+        Query queryRef = userRef.orderByChild("email").equalTo(getIntent().getExtras().getString("email")); //looking for user with specified email address
+        queryRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                Map<String, Object> user = (Map<String, Object>) snapshot.getValue();
+                rating.setText("Current Rating: " + user.get("rating"));
+                welcome.setText("Welcome "+snapshot.getKey()+"!");
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
 
+            // Get the data on a post that has been removed
+            @Override
+            public void onChildRemoved(DataSnapshot snapshot) {}
 
+            // Get the data on a post that has changed
+            @Override
+            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {}
 
+            @Override
+            public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
+        });
 
     }
 

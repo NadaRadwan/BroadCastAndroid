@@ -1,20 +1,26 @@
 package com.example.nada.broadcast;
 
 import android.content.Intent;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
 
 import java.util.Map;
 
 public class RegisterPage extends AppCompatActivity {
 
     Firebase dbRef;
+    boolean complete; //verify all fields have been entered and are within bounds
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,19 +38,42 @@ public class RegisterPage extends AppCompatActivity {
         final EditText password = (EditText) findViewById(R.id.password);
         final EditText rePassword = (EditText) findViewById(R.id.rePassword);
 
-        //checking that all fields have been entered
-        boolean complete = true; //check if all fields are entered
+        complete=true;//all fields are verified
 
-        if (email.getText().toString().length() == 0) { //if nothing was entered
+        //check if email has been entered
+        if (email.getText().toString().length() == 0) {
             complete=false;
             email.setError(getString(R.string.error_field_required));
         }
 
+        //check if userName has been entered and if it has been used before
         if (userName.getText().toString().length() == 0) { //if nothing was entered
             complete=false;
             userName.setError(getString(R.string.error_field_required));
+        }else{
+            //check if userName has been previously found in the database
+//            Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/users/");
+//            // Attach an listener to read the data at our users reference
+//            userRef.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot snapshot) {
+//                    for (DataSnapshot userSnapshot: snapshot.getChildren()) {
+//                        if (userSnapshot.getKey().equals(userName.getText().toString())) {
+//                            complete=false;
+//                            userName.setError("User name already taken!");
+//                        }
+//                    }
+//                }
+//                @Override
+//                public void onCancelled(FirebaseError firebaseError) {
+//                    System.out.println("The read failed: " + firebaseError.getMessage());
+//                }
+//            });
+//            if(!complete){
+//                complete=false;}
         }
 
+        //check if password has been entered and is of appropriate length
         if (password.getText().toString().length()<5) {
             complete = false;
             if (password.getText().toString().length() == 0) { //if nothing is entered
@@ -54,16 +83,18 @@ public class RegisterPage extends AppCompatActivity {
             }
         }
 
+        //check is rePassword has been entered
         if (rePassword.getText().toString().length() == 0) {
             complete = false;
             rePassword.setError(getString(R.string.error_field_required));
         }
 
+
         if (complete) { //all fields entered
             //check if password and re-entered password match
             if (password.getText().toString().equals(rePassword.getText().toString())) {
 
-                   //creating entry in users table  storing userName and rating
+                   //creating entry in users table  storing userName, email and rating
                    //primary key is userName not email!
                            Firebase userRef = dbRef.child("users").child(userName.getText().toString());
                            User u=new User(email.getText().toString());
@@ -86,7 +117,7 @@ public class RegisterPage extends AppCompatActivity {
                     @Override
                     public void onError(FirebaseError firebaseError) {
                         // there was an error
-                        Toast.makeText(getApplicationContext(), "\"Email address taken or of invalid format!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "\"Email address already taken or of invalid format!", Toast.LENGTH_SHORT).show();
                     }
                 });
             } else {

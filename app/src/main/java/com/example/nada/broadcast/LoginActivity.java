@@ -193,6 +193,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("loginActivity","valid password");
                     showProgress(false);//stop the progress bar
 
+
                     Intent i = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
                     //sending the email used to login
                     i.putExtra("email", mEmail);
