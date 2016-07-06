@@ -16,6 +16,7 @@ public class Home extends FragmentActivity {
     ListeningFragment listening = new ListeningFragment();
     FavouritesFragment favourites = new FavouritesFragment();
     ProfileFragment profile = new ProfileFragment();
+    boolean isLoggedIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class Home extends FragmentActivity {
 //        return true;
 //    }
 
+    //navigates to the browse page (fragment)
     public void toBrowsePage(View view){
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -61,6 +63,7 @@ public class Home extends FragmentActivity {
         transaction.commit();
     }
 
+    //navigates to the listening page (fragment for now, will make into activity)
     public void toListeningPage(View view){
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -69,12 +72,32 @@ public class Home extends FragmentActivity {
         transaction.commit();
     }
 
+    //navigates to the favourites page (activity)
     public void toRecordActivity (View view){
 
-        Intent record = new Intent(Home.this, Record.class);
-        startActivity(record);
+
+
+        //You'll have to get the value whether the user is logged in or not and assign it to this variable.
+        //For now I initialized it so the code works.
+        isLoggedIn = false;
+
+        if (!isLoggedIn){
+            Intent login = new Intent(Home.this, LoginActivity.class);
+
+            //pass the string name of the page that the user wants to navigate to, to the login page so the login page can
+            //redirect the user there after successfuly logging in. (The login page uses a switch statement)
+            //to navigate to the correct page
+            login.putExtra("Intent", "record");
+            startActivity(login);
+        }
+        else{
+            Intent record = new Intent(Home.this, Record.class);
+            startActivity(record);
+        }
+
     }
 
+    //navigates to the favourites page (fragment)
     public void toFavouritesPage(View view){
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -83,6 +106,7 @@ public class Home extends FragmentActivity {
         transaction.commit();
     }
 
+    //navigates to the profile page (fragment)
     public void toProfilePage(View view){
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
