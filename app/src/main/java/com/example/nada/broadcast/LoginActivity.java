@@ -3,53 +3,31 @@ package com.example.nada.broadcast;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import static android.Manifest.permission.READ_CONTACTS;
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-//    private static final String[] DUMMY_CREDENTIALS = new String[]{
-//            "admin@admin.com:admin", "admin1@admin1.com;admin1"
-//    };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      * This is a thread
@@ -62,18 +40,18 @@ public class LoginActivity extends AppCompatActivity {
     private View mProgressView;
     private View mLoginFormView;
 
-    DatabaseHelper myDB; //store instance of Broadcast database
+    Firebase dbRef; //instance of the database
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //creating an instance of the Broadcast database
-        myDB = new DatabaseHelper(this);
+        //creating an instance of the database
+        dbRef=new Firebase("https://broadcast11.firebaseio.com/");
 
         // Set up the login form.
-        mEmailView = (EditText) findViewById(R.id.userId);
+        mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
 
         //ANOTHER WAY TO DO THIS IS BY SETTING ONCLICK ON THE BUTTON IN THE XML FILE
@@ -105,27 +83,23 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String userId = mEmailView.getText().toString();
+        String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(userId)) {
+        // Check for an entered email address.
+        if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(userId)) {
-            mEmailView.setError(getString(R.string.error_userId));
-            focusView = mEmailView;
+        }
+
+        // Check for an entered password.
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
             cancel = true;
         }
 
@@ -137,18 +111,9 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(userId, password); //create thread
+            mAuthTask = new UserLoginTask(email, password); //create thread
             mAuthTask.execute(); //start thread
         }
-    }
-
-    private boolean isEmailValid(String userid) {
-        //TODO: Replace this with your own logic
-        return userid.length()>4;
-    }
-
-    private boolean isPasswordValid(String password) {
-        return password.length() > 4;
     }
 
     /**
@@ -211,53 +176,42 @@ public class LoginActivity extends AppCompatActivity {
          */
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
             boolean validCred = false;
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+//            try {
+//                // Simulate network access.
+//                Thread.sleep(2000);
+//            } catch (InterruptedException e) {
+//                return false;
+//            }
 
-            User u= myDB.getUser(mEmail); //retrieving the user with the entered email
 
-            if(u==null){ //there is no such user
-                Log.d("loginActivity","there is no such user");
-                return false;
-            }else {
-                String validPassword = u.getPassword();
-                if (mPassword.equals(validPassword)) { //check if correct password was entered
+            dbRef.authWithPassword(mEmail, mPassword, new Firebase.AuthResultHandler() {
+
+                @Override
+                public void onAuthenticated(AuthData authData) {
+                    System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
                     Log.d("loginActivity","valid password");
-                    return true;
-                } else {
-                    Log.d("loginActivity","invalid password");
-                    return false;
+                    showProgress(false);//stop the progress bar
+
+
+                    Intent i = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+                    //sending the email used to login
+                    i.putExtra("email", mEmail);
+                    startActivity(i); //navigates to the next page (userProfile)
                 }
-            }
-        }
+                @Override
+                public void onAuthenticationError(FirebaseError firebaseError) {
+                    // there was an error
+                    Log.d("loginActivity","invalid password");
+                    //if we cancel mAuthTask, we will not be able to try to enter username/password multipe times
+                    mAuthTask = null;//we have to set it to null so that we can retry
+                    showProgress(false); //stop the progress bar
 
-
-//
-        /*
-         *  invoked on the UI thread after the background computation finishes.
-         *  The result of the background computation is passed to this step as a parameter (success).
-         *  success indicates whether the username and password were valid
-         */
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            //if we cancel mAuthTask, we will not be able to try to enter username/password multipe times
-            mAuthTask = null;//we have to set it to null so that we can retry
-            showProgress(false);
-
-            if (success) {
-                Intent i = new Intent(LoginActivity.this, HomePage.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
-                i.putExtra("user", myDB.getUser(mEmailView.getText().toString()).getName());
-                startActivity(i); //navigates to the next page (summary)
-            } else {
-                mEmailView.setError(getString(R.string.error_invalid_credentials));
-                mEmailView.requestFocus(); //requests that the component gets the input focus
-            }
+                    mEmailView.setError(getString(R.string.error_invalid_credentials));
+                    mEmailView.requestFocus(); //requests that the component gets the input focus
+                }
+            });
+            return true;
         }
 
         @Override
