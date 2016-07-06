@@ -1,0 +1,154 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.nada.broadcast.BrowseFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/background">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Suscribed"
+                android:id="@+id/catsub"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:background="@drawable/button"
+                android:layout_marginBottom="2dp"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Music"
+                android:id="@+id/catmusic"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:background="@drawable/button"
+                android:layout_marginBottom="2dp"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="News"
+                android:id="@+id/button2"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:background="@drawable/button"
+                android:layout_marginBottom="2dp" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Comedy"
+                android:id="@+id/button3"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/button"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Podcasts"
+                android:id="@+id/button4"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/button" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Blog"
+                android:id="@+id/button5"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/button"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="New Button"
+                android:id="@+id/button6"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/button"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="New Button"
+                android:id="@+id/button7"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/button"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="New Button"
+                android:id="@+id/button8"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/button"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="New Button"
+                android:id="@+id/button9"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/button"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="New Button"
+                android:id="@+id/button10"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/button"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="New Button"
+                android:id="@+id/button11"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:padding="18dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/button"/>
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

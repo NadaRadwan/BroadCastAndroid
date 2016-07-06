@@ -193,11 +193,37 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("loginActivity","valid password");
                     showProgress(false);//stop the progress bar
 
+                    //This if statement will navigate the user back to the page from which they clicked that brought them to the
+                    //login. If they directly clicked login, they will be navigated to profile?
+                    //I am considering changing this so the check happens in the page that the user wants to navigate to
+                    //rather than this page, but for now it is as this.
+                    if(getIntent().hasExtra("Intent")){
+                        Bundle intentinfo = getIntent().getExtras();
 
-                    Intent i = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
-                    //sending the email used to login
-                    i.putExtra("email", mEmail);
-                    startActivity(i); //navigates to the next page (userProfile)
+                        switch (intentinfo.getString("Intent")){
+                            case "record":
+                                Intent record = new Intent(LoginActivity.this, Record.class);
+                                startActivity(record);
+                                break;
+                            //These next scenarios will be different because they are fragments, not activities.
+                            //I will implement later.
+//                            case "favourites":
+//                                Intent record = new Intent(LoginActivity.this, Record.class);
+//                                startActivity(record);
+//                                break;
+//                            case "record":
+//                                Intent record = new Intent(LoginActivity.this, Record.class);
+//                                startActivity(record);
+//                                break;
+                        }
+                    }
+                    else{
+                        Intent i = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+                        //sending the email used to login
+                        i.putExtra("email", mEmail);
+                        startActivity(i); //navigates to the next page (userProfile)
+                    }
+
                 }
                 @Override
                 public void onAuthenticationError(FirebaseError firebaseError) {
