@@ -96,7 +96,7 @@ public class UserProfile extends AppCompatActivity implements MediaPlayer.OnErro
     public void logout(){
         dbRef.unauth(); //calling unauth invalidates the user token and logs them out o the application
         Toast.makeText(getApplicationContext(), "Successfully logged out", Toast.LENGTH_SHORT).show(); //display small window saying "settings saved"
-        Intent i = new Intent(UserProfile.this, LoginActivity.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+        Intent i = new Intent(UserProfile.this, Home.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
         startActivity(i); //navigates to the next page (summary)
     }
 

@@ -1,6 +1,9 @@
 package com.example.nada.broadcast;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -9,14 +12,20 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import com.firebase.client.Firebase;
 
 public class Home extends FragmentActivity {
 
     BrowseFragment browse = new BrowseFragment();
     ListeningFragment listening = new ListeningFragment();
     FavouritesFragment favourites = new FavouritesFragment();
-    ProfileFragment profile = new ProfileFragment();
+
+    Firebase dbRef;
     boolean isLoggedIn;
+    SharedPreferences sharedpreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +34,8 @@ public class Home extends FragmentActivity {
 
 //        Toolbar titlebar = (Toolbar) findViewById(getResources().getIdentifier("action_bar_title", "id", "android"));
 //        setSupportActionBar(titlebar);
-
+        dbRef=new Firebase("https://broadcast11.firebaseio.com/");
+        sharedpreferences= PreferenceManager.getDefaultSharedPreferences(this);
 
         if (findViewById(R.id.fragcontent) != null){
 
@@ -76,10 +86,11 @@ public class Home extends FragmentActivity {
     public void toRecordActivity (View view){
 
 
-
-        //You'll have to get the value whether the user is logged in or not and assign it to this variable.
-        //For now I initialized it so the code works.
-        isLoggedIn = false;
+        if(dbRef.getAuth()!=null) { //you are signed in
+            isLoggedIn = true;
+        }else{
+            isLoggedIn = false;
+        }
 
         if (!isLoggedIn){
             Intent login = new Intent(Home.this, LoginActivity.class);
@@ -109,9 +120,31 @@ public class Home extends FragmentActivity {
     //navigates to the profile page (fragment)
     public void toProfilePage(View view){
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragcontent, profile);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        if(dbRef.getAuth()!=null) { //you are signed in
+            isLoggedIn = true;
+        }else{
+            isLoggedIn = false;
+        }
+
+        if (!isLoggedIn){
+            Intent login = new Intent(Home.this, LoginActivity.class);
+
+            //pass the string name of the page that the user wants to navigate to, to the login page so the login page can
+            //redirect the user there after successfuly logging in. (The login page uses a switch statement)
+            //to navigate to the correct page
+            login.putExtra("Intent", "profile");
+            startActivity(login);
+        }
+        else{
+            //navigate directly to user profile page
+            Intent profile = new Intent(Home.this, UserProfile.class);
+            profile.putExtra("email",sharedpreferences.getString("userEmail","") );
+            startActivity(profile);
+        }
+
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.fragcontent, profile);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
     }
 }
