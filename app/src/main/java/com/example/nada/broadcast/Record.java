@@ -43,7 +43,7 @@ public class Record extends AppCompatActivity {
         recordButton = (ImageButton) findViewById(R.id.recordButton);
 
         filename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/myaudio.3gp";
-
+       // filename=android.os.Environment.getExternalStorageDirectory()+"/myaudio.3gp";
     }
 
 //    private void onRecord(boolean start){
@@ -73,17 +73,17 @@ public class Record extends AppCompatActivity {
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setOutputFile(filename);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setOutputFile(filename);
 
         try{
             recorder.prepare();
+            recorder.start();
         }
         catch (IOException e){
             Log.e("RecordTest", "prepare() failed");
         }
 
-        recorder.start();
     }
 
     public void stopRecording(View view){
