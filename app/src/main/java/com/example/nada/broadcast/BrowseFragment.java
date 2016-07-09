@@ -1,15 +1,28 @@
 package com.example.nada.broadcast;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+
+import java.io.IOException;
+import java.util.Map;
 
 
 ///**
@@ -32,6 +45,7 @@ public class BrowseFragment extends Fragment implements View.OnClickListener{
 //    private String mParam2;
 //
 //    private OnFragmentInteractionListener mListener;
+
 
     public BrowseFragment() {
         // Required empty public constructor
@@ -72,18 +86,52 @@ public class BrowseFragment extends Fragment implements View.OnClickListener{
         View view =  inflater.inflate(R.layout.fragment_browse, container, false);
 
 
-        Button catmusic = (Button) view.findViewById(R.id.catmusic);
-        catmusic.setOnClickListener(this);
+        Button music = (Button) view.findViewById(R.id.music);
+        music.setOnClickListener(this);
+
+        Button news = (Button) view.findViewById(R.id.news);
+        news.setOnClickListener(this);
+
+        Button comedy = (Button) view.findViewById(R.id.comedy);
+        comedy.setOnClickListener(this);
+
+        Button podcast = (Button) view.findViewById(R.id.podcast);
+        podcast.setOnClickListener(this);
+
+        Button blog = (Button) view.findViewById(R.id.blog);
+        blog.setOnClickListener(this);
+
         return view;
     }
 
     public void onClick(View v){
+        String categ=""; //will definetly be overwritten upon selcting the category
         switch (v.getId()){
-            case R.id.catmusic:
-                Toast.makeText(getActivity().getApplicationContext(), "msg msg", Toast.LENGTH_LONG).show();
+            case R.id.music:
+                categ="music";
+                break;
+
+            case R.id.news:
+                categ="news";
+                break;
+
+            case R.id.comedy:
+                categ="comedy";
+                break;
+
+            case R.id.podcast:
+                categ="podcast";
+                break;
+
+            case R.id.blog:
+                categ="blog";
                 break;
         }
 
+        //navigate to Browse Category
+        Intent i=new Intent(getActivity(), BrowseCategory.class);
+        i.putExtra("category",categ);
+        startActivity(i);
     }
 
 

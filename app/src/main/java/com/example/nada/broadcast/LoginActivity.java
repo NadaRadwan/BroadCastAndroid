@@ -21,8 +21,13 @@ import android.widget.Toast;
 
 
 import com.firebase.client.AuthData;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+
+import java.util.Map;
 
 
 /**
@@ -93,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
+
         // Check for an entered email address.
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
@@ -159,7 +165,6 @@ public class LoginActivity extends AppCompatActivity {
     public void register(View view){
         //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
         Intent i = new Intent(LoginActivity.this, RegisterPage.class);
-        i.putExtra("email", getIntent().getExtras().getString("email"));
         i.putExtra("Intent", getIntent().getExtras().getString("Intent"));
         startActivity(i); //navigates to the next page (RegisterPage)
     }
@@ -183,14 +188,6 @@ public class LoginActivity extends AppCompatActivity {
          */
         @Override
         protected Boolean doInBackground(Void... params) {
-            boolean validCred = false;
-//            try {
-//                // Simulate network access.
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e) {
-//                return false;
-//            }
-
 
             dbRef.authWithPassword(mEmail, mPassword, new Firebase.AuthResultHandler() {
 
@@ -200,8 +197,8 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("loginActivity","valid password");
                     showProgress(false);//stop the progress bar
 
-                    //send email to the Home page to keep track of active user
-                    SharedPreferences.Editor e=sharedPreferences.edit();
+                    //keep track of email and userName to keep track of active user
+                    final SharedPreferences.Editor e=sharedPreferences.edit();
                     e.putString("userEmail", mEmail);
                     e.apply();
 
@@ -267,6 +264,7 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
         }
+
     }
 }
 
