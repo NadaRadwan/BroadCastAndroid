@@ -1,13 +1,17 @@
 package com.example.nada.broadcast;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -20,6 +24,7 @@ public class RegisterPage extends AppCompatActivity {
 
     Firebase dbRef;
     boolean complete; //verify all fields have been entered and are within bounds
+    SharedPreferences sharedPreferences; //keep track of email address of active users
 
 
     @Override
@@ -29,6 +34,7 @@ public class RegisterPage extends AppCompatActivity {
 
         //referencing the db
         dbRef=new Firebase("https://broadcast11.firebaseio.com/");
+        sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     public void register(View view) {
@@ -107,11 +113,61 @@ public class RegisterPage extends AppCompatActivity {
                         System.out.println("Successfully created user account with user id: " + result.get("uid"));
                         Toast.makeText(getApplicationContext(), "Successfully registered user account!", Toast.LENGTH_SHORT).show();
 
-                        //navigate to user profile page
-                        Intent i = new Intent(RegisterPage.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
-                        //sending the email used to login
-                        i.putExtra("email", email.getText().toString());
-                        startActivity(i); //navigates to the next page (user profile)
+                        //login the user
+                        dbRef.authWithPassword(email.getText().toString(), password.getText().toString(), new Firebase.AuthResultHandler() {
+
+                            @Override
+                            public void onAuthenticated(AuthData authData) {
+                                System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+                                Log.d("loginActivity","logging in after registering");
+
+                                //keep track of email and userName of active user
+                                SharedPreferences.Editor e=sharedPreferences.edit();
+                                e.putString("userEmail", email.getText().toString());
+                                e.apply();
+
+
+                                if(getIntent().hasExtra("Intent")){
+                                    Bundle intentinfo = getIntent().getExtras();
+
+                                    switch (intentinfo.getString("Intent")){
+                                        case "record":
+                                            Intent record = new Intent(RegisterPage.this, Record.class);
+                                            startActivity(record);
+                                            break;
+                                        //These next scenarios will be different because they are fragments, not activities.
+                                        //I will implement later.
+//                            case "favourites":
+//                                Intent record = new Intent(LoginActivity.this, Record.class);
+//                                startActivity(record);
+//                                break;
+//                            case "record":
+//                                Intent record = new Intent(LoginActivity.this, Record.class);
+//                                startActivity(record);
+//                                break;
+                                    }
+                                    switch (intentinfo.getString("Intent")){
+                                        case "profile":
+                                            Intent profile = new Intent(RegisterPage.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+                                            startActivity(profile); //navigates to the next page (userProfile)
+                                            break;
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onAuthenticationError(FirebaseError firebaseError) {
+                                //there will never be an authentication error since the user is registering
+                            }
+                        });
+
+
+
+//                        //navigate to user profile page
+//                        Intent i = new Intent(RegisterPage.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+//                        //sending the email used to login
+//                        i.putExtra("email", email.getText().toString());
+//                        startActivity(i); //navigates to the next page (user profile)
                     }
 
                     @Override

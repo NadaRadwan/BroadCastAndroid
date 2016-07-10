@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 
@@ -19,8 +21,13 @@ import android.widget.Toast;
 
 
 import com.firebase.client.AuthData;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+
+import java.util.Map;
 
 
 /**
@@ -41,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     private View mLoginFormView;
 
     Firebase dbRef; //instance of the database
+    SharedPreferences sharedPreferences; //used to keep track of the user email throughout the login session
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //creating an instance of the database
         dbRef=new Firebase("https://broadcast11.firebaseio.com/");
+        sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
 
         // Set up the login form.
         mEmailView = (EditText) findViewById(R.id.email);
@@ -88,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
 
         boolean cancel = false;
         View focusView = null;
+
 
         // Check for an entered email address.
         if (TextUtils.isEmpty(email)) {
@@ -153,7 +163,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void register(View view){
-        Intent i = new Intent(LoginActivity.this, RegisterPage.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+        //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+        Intent i = new Intent(LoginActivity.this, RegisterPage.class);
+        i.putExtra("Intent", getIntent().getExtras().getString("Intent"));
         startActivity(i); //navigates to the next page (RegisterPage)
     }
     /**
@@ -176,14 +188,6 @@ public class LoginActivity extends AppCompatActivity {
          */
         @Override
         protected Boolean doInBackground(Void... params) {
-            boolean validCred = false;
-//            try {
-//                // Simulate network access.
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e) {
-//                return false;
-//            }
-
 
             dbRef.authWithPassword(mEmail, mPassword, new Firebase.AuthResultHandler() {
 
@@ -192,6 +196,11 @@ public class LoginActivity extends AppCompatActivity {
                     System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
                     Log.d("loginActivity","valid password");
                     showProgress(false);//stop the progress bar
+
+                    //keep track of email and userName to keep track of active user
+                    final SharedPreferences.Editor e=sharedPreferences.edit();
+                    e.putString("userEmail", mEmail);
+                    e.apply();
 
                     //This if statement will navigate the user back to the page from which they clicked that brought them to the
                     //login. If they directly clicked login, they will be navigated to profile?
@@ -216,12 +225,22 @@ public class LoginActivity extends AppCompatActivity {
 //                                startActivity(record);
 //                                break;
                         }
+
+                        switch (intentinfo.getString("Intent")){
+                            case "profile":
+                                Intent profile = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+                                //sending the email used to login
+                                profile.putExtra("email", mEmail);
+                                startActivity(profile); //navigates to the next page (userProfile)
+                                break;
+                        }
                     }
                     else{
-                        Intent i = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
-                        //sending the email used to login
-                        i.putExtra("email", mEmail);
-                        startActivity(i); //navigates to the next page (userProfile)
+                        //YOU WILL NEVER COME TO THE LOGIN PAGE AND NOT BE PASSED AN INTENT
+//                        Intent i = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+//                        //sending the email used to login
+//                        i.putExtra("email", mEmail);
+//                        startActivity(i); //navigates to the next page (userProfile)
                     }
 
                 }
@@ -245,6 +264,7 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
         }
+
     }
 }
 
