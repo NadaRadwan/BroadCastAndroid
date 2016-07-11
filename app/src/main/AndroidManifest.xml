@@ -35,7 +35,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Home" />
         </activity>
-        <activity android:name=".BrowseCategory"></activity>
     </application>
 
 </manifest>

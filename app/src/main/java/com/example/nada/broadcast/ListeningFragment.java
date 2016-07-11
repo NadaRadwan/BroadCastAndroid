@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import java.io.IOException;
 
@@ -23,7 +24,7 @@ import java.io.IOException;
 // * Use the {@link ListeningFragment#newInstance} factory method to
 // * create an instance of this fragment.
 // */
-public class ListeningFragment extends Fragment {
+public class ListeningFragment extends Fragment implements View.OnClickListener{
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
@@ -57,10 +58,13 @@ public class ListeningFragment extends Fragment {
 //        return fragment;
 //    }
 
+
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
     }
 
@@ -70,11 +74,46 @@ public class ListeningFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_listening, container, false);
 
+        //set onclick listeners
+        ImageButton playAudioButton = (ImageButton) view.findViewById(R.id.playAudioButton);
+        playAudioButton.setOnClickListener(this);
+
+        ImageButton pauseAudioButton = (ImageButton) view.findViewById(R.id.pauseAudioButton);
+        pauseAudioButton.setOnClickListener(this);
+
+        ImageButton addFavButton = (ImageButton) view.findViewById(R.id.addFavButton);
+        addFavButton.setOnClickListener(this);
+
+        //set image of favourites icon depending on whether if it is user's favourites or not
+        if(inFavourites()) {
+            addFavButton.setImageResource(R.drawable.ic_removefavourites);
+        }
+        else{
+            addFavButton.setImageResource(R.drawable.ic_addfavourites);
+        }
+
+        return view;
+    }
 
 
+    //deal with all click events within fragment
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.playAudioButton:
+                playAudio();
+                break;
+            case R.id.pauseAudioButton:
+                pauseAudio();
+                break;
+            case R.id.addFavButton:
+                addRemoveFavourites(v);
+                break;
+        }
+    }
 
-        //////////play the stuff
-        //String fileName=recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1);
+    //play audio
+    public void playAudio(){
         MediaPlayer player;
         player = new MediaPlayer();
 
@@ -91,11 +130,34 @@ public class ListeningFragment extends Fragment {
                 Log.e("AudioTest", "prepare() failed");
             }
         }
-
-        return view;
     }
 
-//    // TODO: Rename method, update argument and hook method into UI event
+    //pauses current audio file
+    public void pauseAudio(){
+        //to implement
+    }
+
+    //adds or removes current file to or from user's favourites
+    public void addRemoveFavourites(View v){
+
+    }
+
+    //checks if current audio file is already in user's favourites
+    public boolean inFavourites(){
+        //to implement
+        return false;
+    }
+
+
+
+
+
+
+
+
+
+
+    //    // TODO: Rename method, update argument and hook method into UI event
 //    public void onButtonPressed(Uri uri) {
 //        if (mListener != null) {
 //            mListener.onFragmentInteraction(uri);
