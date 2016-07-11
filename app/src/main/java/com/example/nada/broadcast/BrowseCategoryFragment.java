@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -134,26 +135,23 @@ public class BrowseCategoryFragment extends Fragment{
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
-//COULDNT FIGURE OUT HOW TO NAVIGATE FROM ACTIVITY TO FRAGMENT BUT CLICKING AN AUDIO PLAYS IT!
-                //navigate to Listening Fragment
-//                Intent i=new Intent(getApplicationContext(), ListeningFragment.class);
-//                i.putExtra("fileName", recording.get("filename").toString());
-//                i.putExtra("longDescription", "Title: "+snapshot.getKey()+"\n"+r.completeDescription());
-//                startActivity(i);
 
-                //////////play the stuff
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+
+                ((Home) getActivity()).listening = new ListeningFragment();
+//                ListeningFragment listening = new ListeningFragment();
+                Bundle info = new Bundle();
                 String recordingDesc=((TextView) view).getText().toString();
-                String fileName=recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1);
-                MediaPlayer player;
-                player = new MediaPlayer();
-                try {
-                    player.setDataSource(fileName); //playing the extracted file name
-                    player.prepare();
-                    player.start();
-                }
-                catch (IOException e){
-                    Log.e("AudioTest", "prepare() failed");
-                }
+                info.putString("filename", recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1));
+                ((Home) getActivity()).listening.setArguments(info);
+//                listening.setArguments(info);
+
+                transaction.replace(R.id.fragcontent, ((Home) getActivity()).listening);
+//                transaction.replace(R.id.fragcontent, listening);
+                transaction.addToBackStack(null);
+                transaction.commit();
+
+
             }
         });
 

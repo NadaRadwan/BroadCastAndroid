@@ -129,6 +129,7 @@ public class BrowseFragment extends Fragment implements View.OnClickListener{
                 break;
         }
 
+        //changing the fragment rather than starting a new activity:
         BrowseCategoryFragment browsecategory = new BrowseCategoryFragment();
         Bundle info = new Bundle();
         info.putString("category", categ);

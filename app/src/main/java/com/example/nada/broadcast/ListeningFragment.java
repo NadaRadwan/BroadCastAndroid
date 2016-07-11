@@ -1,22 +1,28 @@
 package com.example.nada.broadcast;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ListeningFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ListeningFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
+///**
+// * A simple {@link Fragment} subclass.
+// * Activities that contain this fragment must implement the
+// * {@link ListeningFragment.OnFragmentInteractionListener} interface
+// * to handle interaction events.
+// * Use the {@link ListeningFragment#newInstance} factory method to
+// * create an instance of this fragment.
+// */
 public class ListeningFragment extends Fragment {
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,21 +56,43 @@ public class ListeningFragment extends Fragment {
 //        fragment.setArguments(args);
 //        return fragment;
 //    }
-//
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-//    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_listening, container, false);
+        View view = inflater.inflate(R.layout.fragment_listening, container, false);
+
+
+
+
+        //////////play the stuff
+        //String fileName=recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1);
+        MediaPlayer player;
+        player = new MediaPlayer();
+
+//        FragmentManager.BackStackEntry backEntry = getFragmentManager().getBackStackEntryAt(getActivity().getFragmentManager().getBackStackEntryCount()-1);
+//        String str=backEntry.getName().toLowerCase();
+        //Fragment fragment=getFragmentManager().findFragmentByTag(str);
+
+        if(getArguments().getString("filename") != null) {
+            try {
+                player.setDataSource(getArguments().getString("filename").toString()); //playing the extracted file name
+                player.prepare();
+                player.start();
+            } catch (IOException e) {
+                Log.e("AudioTest", "prepare() failed");
+            }
+        }
+
+        return view;
     }
 
 //    // TODO: Rename method, update argument and hook method into UI event
