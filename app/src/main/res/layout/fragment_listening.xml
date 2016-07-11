@@ -4,12 +4,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.nada.broadcast.ListeningFragment">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/frameLayout"></FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:layout_gravity="left|top"
+        android:layout_margin="20dp">
 
         <SeekBar
             android:layout_width="wrap_content"
@@ -18,12 +17,52 @@
             android:layout_below="@+id/frameLayout"
             android:layout_centerHorizontal="true" />
 
+        <ImageButton
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:id="@+id/addFavButton"
+            android:layout_gravity="right|top"
+            android:src="@drawable/ic_addfavourites"
+            android:background="#1aa0a0a0" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pauseAudioButton"
+            android:layout_gravity="right|bottom"
+            android:src="@drawable/pause"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/playAudioButton"
+            android:layout_gravity="center_horizontal|bottom"
+            android:src="@drawable/play"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp">
         <RatingBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/ratingBar"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -93,6 +132,8 @@
                 </TableLayout>
             </LinearLayout>
         </ScrollView>
+
+    </FrameLayout>
 
 
 </FrameLayout>

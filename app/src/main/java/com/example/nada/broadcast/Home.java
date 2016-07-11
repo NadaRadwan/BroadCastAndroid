@@ -18,9 +18,9 @@ import com.firebase.client.Firebase;
 
 public class Home extends FragmentActivity {
 
-    BrowseFragment browse = new BrowseFragment();
-    ListeningFragment listening = new ListeningFragment();
-    FavouritesFragment favourites = new FavouritesFragment();
+    public static BrowseFragment browse = new BrowseFragment();
+    public static ListeningFragment listening = new ListeningFragment();
+    public static FavouritesFragment favourites = new FavouritesFragment();
 
     Firebase dbRef;
     boolean isLoggedIn;

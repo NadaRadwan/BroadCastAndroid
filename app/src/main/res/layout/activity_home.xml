@@ -10,65 +10,72 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:id="@+id/fragcontent"
-        android:layout_alignParentStart="true"></FrameLayout>
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/tableLayout">
+    </FrameLayout>
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="@color/menu">
+        android:background="@color/menu"
+        android:id="@+id/tableLayout">
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <Button
-                android:layout_width="70dp"
+            <ImageButton
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1"
-                android:id="@+id/button12"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="15dp"
-                android:onClick="toBrowsePage"/>
+                android:id="@+id/buttonhome"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_home"
+                android:onClick="toBrowsePage"
+                android:background="#00ffffff"
+                android:scaleType="fitCenter"
+                android:padding="20dp" />
 
-            <Button
-                android:layout_width="70dp"
+            <ImageButton
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2"
-                android:id="@+id/button13"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:onClick="toListeningPage"/>
+                android:id="@+id/buttonnp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_nowplaying"
+                android:onClick="toListeningPage"
+                android:background="#00ffffff"
+                android:padding="20dp" />
 
-            <Button
-                android:layout_width="70dp"
+            <ImageButton
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3"
-                android:id="@+id/button14"
-                android:singleLine="false"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="5dp"
-                android:onClick="toRecordActivity"/>
+                android:id="@+id/buttonrecord"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_record"
+                android:onClick="toRecordActivity"
+                android:background="#00ffffff"
+                android:padding="20dp" />
 
-            <Button
-                android:layout_width="70dp"
+            <ImageButton
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4"
-                android:id="@+id/button15"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:onClick="toFavouritesPage"/>
+                android:id="@+id/buttonfav"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_favourites"
+                android:onClick="toFavouritesPage"
+                android:background="#00ffffff"
+                android:padding="20dp" />
 
-            <Button
-                android:layout_width="70dp"
+            <ImageButton
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5"
-                android:id="@+id/button16"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="5dp"
-                android:onClick="toProfilePage"/>
+                android:id="@+id/buttonprofile"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_profile"
+                android:onClick="toProfilePage"
+                android:background="#00ffffff"
+                android:padding="20dp" />
         </TableRow>
     </TableLayout>
 

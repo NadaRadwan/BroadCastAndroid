@@ -1,23 +1,30 @@
 package com.example.nada.broadcast;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+
+import java.io.IOException;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ListeningFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ListeningFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ListeningFragment extends Fragment {
+///**
+// * A simple {@link Fragment} subclass.
+// * Activities that contain this fragment must implement the
+// * {@link ListeningFragment.OnFragmentInteractionListener} interface
+// * to handle interaction events.
+// * Use the {@link ListeningFragment#newInstance} factory method to
+// * create an instance of this fragment.
+// */
+public class ListeningFragment extends Fragment implements View.OnClickListener{
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
@@ -50,24 +57,112 @@ public class ListeningFragment extends Fragment {
 //        fragment.setArguments(args);
 //        return fragment;
 //    }
-//
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-//    }
+
+
+
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_listening, container, false);
+        View view = inflater.inflate(R.layout.fragment_listening, container, false);
+
+        //set onclick listeners
+        ImageButton playAudioButton = (ImageButton) view.findViewById(R.id.playAudioButton);
+        playAudioButton.setOnClickListener(this);
+
+        ImageButton pauseAudioButton = (ImageButton) view.findViewById(R.id.pauseAudioButton);
+        pauseAudioButton.setOnClickListener(this);
+
+        ImageButton addFavButton = (ImageButton) view.findViewById(R.id.addFavButton);
+        addFavButton.setOnClickListener(this);
+
+        //set image of favourites icon depending on whether if it is user's favourites or not
+        if(inFavourites()) {
+            addFavButton.setImageResource(R.drawable.ic_removefavourites);
+        }
+        else{
+            addFavButton.setImageResource(R.drawable.ic_addfavourites);
+        }
+
+        return view;
     }
 
-//    // TODO: Rename method, update argument and hook method into UI event
+
+    //deal with all click events within fragment
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.playAudioButton:
+                playAudio();
+                break;
+            case R.id.pauseAudioButton:
+                pauseAudio();
+                break;
+            case R.id.addFavButton:
+                addRemoveFavourites(v);
+                break;
+        }
+    }
+
+    //play audio
+    public void playAudio(){
+        MediaPlayer player;
+        player = new MediaPlayer();
+
+//        FragmentManager.BackStackEntry backEntry = getFragmentManager().getBackStackEntryAt(getActivity().getFragmentManager().getBackStackEntryCount()-1);
+//        String str=backEntry.getName().toLowerCase();
+        //Fragment fragment=getFragmentManager().findFragmentByTag(str);
+
+        if(getArguments().getString("filename") != null) {
+            try {
+                player.setDataSource(getArguments().getString("filename").toString()); //playing the extracted file name
+                player.prepare();
+                player.start();
+            } catch (IOException e) {
+                Log.e("AudioTest", "prepare() failed");
+            }
+        }
+    }
+
+    //pauses current audio file
+    public void pauseAudio(){
+        //to implement
+    }
+
+    //adds or removes current file to or from user's favourites
+    public void addRemoveFavourites(View v){
+        if (inFavourites()){
+            //implement remove from favourites
+        }
+        else{
+            //implement add to favourites
+        }
+    }
+
+    //checks if current audio file is already in user's favourites
+    public boolean inFavourites(){
+        //to implement
+        return false;
+    }
+
+
+
+
+
+
+
+
+
+
+    //    // TODO: Rename method, update argument and hook method into UI event
 //    public void onButtonPressed(Uri uri) {
 //        if (mListener != null) {
 //            mListener.onFragmentInteraction(uri);

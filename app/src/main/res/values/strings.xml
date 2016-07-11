@@ -21,4 +21,13 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="category">
+        <item>Music</item>
+        <item>News</item>
+        <item>Comedy</item>
+        <item>Podcast</item>
+        <item>Blog</item>
+        <item>Other</item>
+    </string-array>
 </resources>
