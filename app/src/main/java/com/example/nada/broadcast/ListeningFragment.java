@@ -139,7 +139,12 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 
     //adds or removes current file to or from user's favourites
     public void addRemoveFavourites(View v){
-
+        if (inFavourites()){
+            //implement remove from favourites
+        }
+        else{
+            //implement add to favourites
+        }
     }
 
     //checks if current audio file is already in user's favourites
