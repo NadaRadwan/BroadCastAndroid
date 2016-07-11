@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,30 +109,40 @@ public class BrowseFragment extends Fragment implements View.OnClickListener{
         String categ=""; //will definetly be overwritten upon selcting the category
         switch (v.getId()){
             case R.id.music:
-                categ="music";
+                categ="Music";
                 break;
 
             case R.id.news:
-                categ="news";
+                categ="News";
                 break;
 
             case R.id.comedy:
-                categ="comedy";
+                categ="Comedy";
                 break;
 
             case R.id.podcast:
-                categ="podcast";
+                categ="Podcast";
                 break;
 
             case R.id.blog:
-                categ="blog";
+                categ="Blog";
                 break;
         }
 
+        BrowseCategoryFragment browsecategory = new BrowseCategoryFragment();
+        Bundle info = new Bundle();
+        info.putString("category", categ);
+        browsecategory.setArguments(info);
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragcontent, browsecategory);
+        transaction.addToBackStack(null);
+        transaction.commit();
+
         //navigate to Browse Category
-        Intent i=new Intent(getActivity(), BrowseCategory.class);
-        i.putExtra("category",categ);
-        startActivity(i);
+//        Intent i=new Intent(getActivity(), BrowseCategory.class);
+//        i.putExtra("category",categ);
+//        startActivity(i);
     }
 
 

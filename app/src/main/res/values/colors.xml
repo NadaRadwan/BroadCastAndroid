@@ -8,4 +8,5 @@
     <color name="background">#ebf1f5</color>
     <color name="pressed">#dde2e5</color>
     <color name="button">#ffffff</color>
+    <color name="transparent">#00ffffff</color>
 </resources>

@@ -1,10 +1,10 @@
 package com.example.nada.broadcast;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.media.MediaRecorder;
@@ -13,9 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-//import com.roughike.bottombar.BottomBar;
-//import com.roughike.bottombar.OnMenuTabSelectedListener;
-//import android.support.design.widget.CoordinatorLayout;
+import android.app.AlertDialog;
+import android.widget.Spinner;
 
 import com.firebase.client.Firebase;
 
@@ -138,15 +137,43 @@ public class Record extends AppCompatActivity {
 
 
     public void uploadFile(View view){
-        String recordingName= ((EditText) findViewById(R.id.recordingName)).getText().toString();
-        String category = ((EditText) findViewById(R.id.category)).getText().toString();
-        String description = ((EditText) findViewById(R.id.description)).getText().toString();
-        //creating entry in recordings table  storing recordingName, recording, userName, rating, category and description
-        //primary key is recordingName!
-        Firebase recordingRef = dbRef.child("recordings").child(recordingName);
-        Recording r=new Recording(filename, sharedPreferences.getString("userEmail",""), category, description); //PASS CORRECT USERNAME
-        recordingRef.setValue(r);
 
+        String recordingName= ((EditText) findViewById(R.id.recordingName)).getText().toString();
+        String category = ((Spinner) findViewById(R.id.category)).getSelectedItem().toString();
+        String description = ((EditText) findViewById(R.id.description)).getText().toString();
+
+        if (recordingName.isEmpty()){
+            ((EditText) findViewById(R.id.recordingName)).setError("Please set a title");
+        }
+        else{
+            //creating entry in recordings table  storing recordingName, recording, userName, rating, category and description
+            //primary key is recordingName!
+            Firebase recordingRef = dbRef.child("recordings").child(recordingName);
+            Recording r=new Recording(filename, sharedPreferences.getString("userEmail",""), category, description); //PASS CORRECT USERNAME
+            recordingRef.setValue(r);
+        }
+
+    }
+
+    //dialog to make sure user wants to overrite their recording
+    public void testdialog(View view){
+        AlertDialog.Builder alertDialog1 = new AlertDialog.Builder(Record.this);
+        alertDialog1.setTitle("Are you sure?");
+
+        alertDialog1.setMessage("sure?")
+                .setPositiveButton("yup", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // FIRE ZE MISSILES!
+                    }
+                })
+                .setNegativeButton("nope", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        // Create the AlertDialog object and return it
+        alertDialog1.create();
+        alertDialog1.show();
     }
 
 //
