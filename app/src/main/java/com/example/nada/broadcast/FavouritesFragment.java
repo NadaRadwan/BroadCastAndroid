@@ -80,6 +80,9 @@ public class FavouritesFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favourites, container, false);
 
+        if (savedInstanceState != null) {
+            return getView() ;
+        }
 
         // querying database to get all recordings in this specific category
         Firebase favRef = new Firebase("https://broadcast11.firebaseio.com/favourites/");

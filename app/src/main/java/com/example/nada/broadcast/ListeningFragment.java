@@ -23,6 +23,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -221,8 +222,35 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 
     //checks if current audio file is already in user's favourites
     public boolean inFavourites(){
-        //to implement
         return false;
+        //getting title of recording
+//        String fileDescription=getArguments().getString("description");
+//        final String recName=fileDescription.substring(7,fileDescription.indexOf(";"));
+//
+//
+//        //check if userName has been previously found in the database
+//            Firebase favRef = new Firebase("https://broadcast11.firebaseio.com/favourites/");
+//            // Attach an listener to read the data at our users reference
+//            favRef.addValueEventListener(new ValueEventListener() {
+//
+//                @Override
+//                public void onDataChange(DataSnapshot snapshot) {
+//                    for (DataSnapshot userSnapshot: snapshot.getChildren()) {
+//                        Map<String, Object> favourite = (Map<String, Object>) snapshot.getValue();
+//                        if (favourite.get("favourite").equals(recName) && favourite.get("email").equals(sharedpreferences.getString("userEmail",""))){
+//                            return false;
+//                        }
+//                    }
+//                }
+//                @Override
+//                public void onCancelled(FirebaseError firebaseError) {
+//                    System.out.println("The read failed: " + firebaseError.getMessage());
+//                }
+//            });
+//
+//
+//
+//        return false;
     }
 
 

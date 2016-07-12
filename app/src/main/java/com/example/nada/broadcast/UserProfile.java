@@ -25,9 +25,9 @@ import com.firebase.client.ValueEventListener;
 import java.io.IOException;
 import java.util.Map;
 
-public class UserProfile extends AppCompatActivity implements MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener {
+public class UserProfile extends AppCompatActivity {
 
-    private MediaPlayer player;
+    //private MediaPlayer player;
     Firebase dbRef;
     SharedPreferences sharedpreferences;
 
@@ -35,6 +35,9 @@ public class UserProfile extends AppCompatActivity implements MediaPlayer.OnErro
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //connecting to the db
         dbRef=new Firebase("https://broadcast11.firebaseio.com/");
@@ -102,8 +105,9 @@ public class UserProfile extends AppCompatActivity implements MediaPlayer.OnErro
     public void logout(){
         dbRef.unauth(); //calling unauth invalidates the user token and logs them out o the application
         Toast.makeText(getApplicationContext(), "Successfully logged out", Toast.LENGTH_SHORT).show(); //display small window saying "settings saved"
-        Intent i = new Intent(UserProfile.this, Home.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
-        startActivity(i); //navigates to the next page
+        Intent i=new Intent(UserProfile.this, Home.class);
+        i.putExtra("fragmentNav", "browse");
+        startActivity(i);
     }
 
     public void changePassword(View view){
@@ -150,19 +154,19 @@ public class UserProfile extends AppCompatActivity implements MediaPlayer.OnErro
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        player.release();
-        player = null;
-    }
-    @Override
-    public void onPrepared(MediaPlayer play) {
-        play.start();
-    }
-    @Override
-    public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
-        return false;
-    }
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//        player.release();
+//        player = null;
+//    }
+//    @Override
+//    public void onPrepared(MediaPlayer play) {
+//        play.start();
+//    }
+//    @Override
+//    public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
+//        return false;
+//    }
 
 }

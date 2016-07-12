@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.app.AlertDialog;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 
@@ -155,6 +156,7 @@ public class Record extends AppCompatActivity {
             recordingRef.setValue(r);
         }
 
+        Toast.makeText(getApplicationContext(), "Successfully uploaded", Toast.LENGTH_SHORT).show();
     }
 
     //dialog to make sure user wants to overrite their recording
