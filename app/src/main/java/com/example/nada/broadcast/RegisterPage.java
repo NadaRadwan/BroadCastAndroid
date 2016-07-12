@@ -135,18 +135,11 @@ public class RegisterPage extends AppCompatActivity {
                                             Intent record = new Intent(RegisterPage.this, Record.class);
                                             startActivity(record);
                                             break;
-                                        //These next scenarios will be different because they are fragments, not activities.
-                                        //I will implement later.
-//                            case "favourites":
-//                                Intent record = new Intent(LoginActivity.this, Record.class);
-//                                startActivity(record);
-//                                break;
-//                            case "record":
-//                                Intent record = new Intent(LoginActivity.this, Record.class);
-//                                startActivity(record);
-//                                break;
-                                    }
-                                    switch (intentinfo.getString("Intent")){
+                                        case "favourites":
+                                            Intent favourite=new Intent(RegisterPage.this, Home.class);
+                                            favourite.putExtra("fragmentNav", "favourites");
+                                            startActivity(favourite);
+                                            break;
                                         case "profile":
                                             Intent profile = new Intent(RegisterPage.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
                                             startActivity(profile); //navigates to the next page (userProfile)

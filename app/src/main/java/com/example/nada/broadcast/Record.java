@@ -143,13 +143,15 @@ public class Record extends AppCompatActivity {
         String description = ((EditText) findViewById(R.id.description)).getText().toString();
 
         if (recordingName.isEmpty()){
-            ((EditText) findViewById(R.id.recordingName)).setError("Please set a title");
+            ((EditText) findViewById(R.id.recordingName)).setError("Please specify the recording title");
+        }else if(description.isEmpty()){
+            ((EditText) findViewById(R.id.description)).setError("Please enter a description");
         }
         else{
             //creating entry in recordings table  storing recordingName, recording, userName, rating, category and description
             //primary key is recordingName!
             Firebase recordingRef = dbRef.child("recordings").child(recordingName);
-            Recording r=new Recording(filename, sharedPreferences.getString("userEmail",""), category, description); //PASS CORRECT USERNAME
+            Recording r=new Recording(recordingName, filename, sharedPreferences.getString("userEmail",""), category, description); //PASS CORRECT USERNAME
             recordingRef.setValue(r);
         }
 

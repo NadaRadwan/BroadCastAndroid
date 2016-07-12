@@ -140,10 +140,6 @@ public class BrowseFragment extends Fragment implements View.OnClickListener{
         transaction.addToBackStack(null);
         transaction.commit();
 
-        //navigate to Browse Category
-//        Intent i=new Intent(getActivity(), BrowseCategory.class);
-//        i.putExtra("category",categ);
-//        startActivity(i);
     }
 
 

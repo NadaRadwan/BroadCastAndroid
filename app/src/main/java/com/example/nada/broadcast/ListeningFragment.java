@@ -1,9 +1,11 @@
 package com.example.nada.broadcast;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -11,9 +13,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 ///**
@@ -25,6 +39,10 @@ import java.io.IOException;
 // * create an instance of this fragment.
 // */
 public class ListeningFragment extends Fragment implements View.OnClickListener{
+
+    Firebase dbRef; //reference to the database
+    SharedPreferences sharedpreferences;
+
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
@@ -65,7 +83,8 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        dbRef=new Firebase("https://broadcast11.firebaseio.com/");
+        sharedpreferences= PreferenceManager.getDefaultSharedPreferences(this.getContext());
     }
 
     @Override
@@ -73,6 +92,19 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_listening, container, false);
+
+        TextView description = (TextView) view.findViewById(R.id.recordingDesc);
+        try{ //null pointer exception throw if description is not passed
+            description.setText(getArguments().getString("description"));
+        }catch (Exception e){
+            Toast.makeText(getContext(), "Nothing currently playing!", Toast.LENGTH_SHORT).show();
+            FragmentTransaction tran=getActivity().getSupportFragmentManager().beginTransaction();
+            tran.replace(R.id.fragcontent, ((Home)getActivity()).browse );
+            tran.addToBackStack(null);
+            tran.commit();
+        }
+
+
 
         //set onclick listeners
         ImageButton playAudioButton = (ImageButton) view.findViewById(R.id.playAudioButton);
@@ -120,10 +152,11 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 //        FragmentManager.BackStackEntry backEntry = getFragmentManager().getBackStackEntryAt(getActivity().getFragmentManager().getBackStackEntryCount()-1);
 //        String str=backEntry.getName().toLowerCase();
         //Fragment fragment=getFragmentManager().findFragmentByTag(str);
-
-        if(getArguments().getString("filename") != null) {
+        String fileDescription=getArguments().getString("description");
+        String fileName=fileDescription.substring(fileDescription.indexOf("/"));
+        if(fileName != null) {
             try {
-                player.setDataSource(getArguments().getString("filename").toString()); //playing the extracted file name
+                player.setDataSource(fileName); //playing the extracted file name
                 player.prepare();
                 player.start();
             } catch (IOException e) {
@@ -139,11 +172,50 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 
     //adds or removes current file to or from user's favourites
     public void addRemoveFavourites(View v){
+        String s=getArguments().getString("description");
+
         if (inFavourites()){
             //implement remove from favourites
         }
         else{
-            //implement add to favourites
+
+            Toast.makeText(getContext(), "Successfully added to favourites", Toast.LENGTH_SHORT).show();
+
+            //adding recording to favourites
+            final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/users/");
+            final Query queryRef = userRef.orderByChild("email").equalTo(sharedpreferences.getString("userEmail","")); //looking for user with specified email address
+            queryRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                    String name=snapshot.getKey();
+                    final Firebase favRef = new Firebase("https://broadcast11.firebaseio.com/favourites/");
+                    Map<String, Object> user = (Map<String, Object>) snapshot.getValue();
+
+                    //getting title of recording
+                    String fileDescription=getArguments().getString("description");
+                    String recName=fileDescription.substring(7,fileDescription.indexOf(";"));
+
+                    //adding fto favourites
+                    Map<String, String> post1 = new HashMap<String, String>();
+                    post1.put("email", sharedpreferences.getString("userEmail",""));
+                    post1.put("favourite", recName);
+                    favRef.push().setValue(post1);
+                }
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+
+                // Get the data on a post that has been removed
+                @Override
+                public void onChildRemoved(DataSnapshot snapshot) {}
+
+                // Get the data on a post that has changed
+                @Override
+                public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {}
+
+                @Override
+                public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
+            });
+
         }
     }
 

@@ -6,55 +6,11 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="110dp"
-        android:layout_gravity="left|top"
-        android:layout_margin="20dp">
-
-        <SeekBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/seekBar"
-            android:layout_below="@+id/frameLayout"
-            android:layout_centerHorizontal="true" />
-
-        <ImageButton
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:id="@+id/addFavButton"
-            android:layout_gravity="right|top"
-            android:src="@drawable/ic_addfavourites"
-            android:background="#1aa0a0a0" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/pauseAudioButton"
-            android:layout_gravity="right|bottom"
-            android:src="@drawable/pause"/>
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/playAudioButton"
-            android:layout_gravity="center_horizontal|bottom"
-            android:src="@drawable/play"/>
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="20dp">
-        <RatingBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/ratingBar"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
-    </FrameLayout>
+        android:layout_marginBottom="20dp"></FrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -134,6 +90,59 @@
         </ScrollView>
 
     </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:layout_gravity="center"
+        android:layout_margin="20dp">
+
+        <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar"
+            android:layout_below="@+id/frameLayout"
+            android:layout_centerHorizontal="true" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/playAudioButton"
+            android:layout_gravity="left|bottom"
+            android:src="@drawable/play"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pauseAudioButton"
+            android:layout_gravity="center_horizontal|bottom"
+            android:src="@drawable/pause"/>
+
+        <ImageButton
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:id="@+id/addFavButton"
+            android:layout_gravity="right|bottom"
+            android:src="@drawable/ic_addfavourites"
+            android:background="#1aa0a0a0" />
+
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ratingBar"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="right|top" />
+
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/recordingDesc"
+        android:layout_gravity="center_horizontal|top" />
 
 
 </FrameLayout>

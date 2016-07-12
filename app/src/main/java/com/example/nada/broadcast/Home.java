@@ -39,13 +39,23 @@ public class Home extends FragmentActivity {
 
         if (findViewById(R.id.fragcontent) != null){
 
-            if (savedInstanceState != null) {
-                return;
+            try{
+                if(getIntent().getExtras().getString("fragmentNav").equals("favourites")){
+                    favourites.setArguments(getIntent().getExtras());
+
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragcontent, favourites).commit();
+                }
+            }catch (Exception e){
+
+                if (savedInstanceState != null) {
+                    return;
+                }
+
+                browse.setArguments(getIntent().getExtras());
+
+                getSupportFragmentManager().beginTransaction().add(R.id.fragcontent, browse).commit();
             }
 
-            browse.setArguments(getIntent().getExtras());
-
-            getSupportFragmentManager().beginTransaction().add(R.id.fragcontent, browse).commit();
         }
     }
 
@@ -111,10 +121,27 @@ public class Home extends FragmentActivity {
     //navigates to the favourites page (fragment)
     public void toFavouritesPage(View view){
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragcontent, favourites);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        if(dbRef.getAuth()!=null) { //you are signed in
+            isLoggedIn = true;
+        }else{
+            isLoggedIn = false;
+        }
+
+        if (!isLoggedIn){
+            Intent login = new Intent(Home.this, LoginActivity.class);
+
+            //pass the string name of the page that the user wants to navigate to, to the login page so the login page can
+            //redirect the user there after successfuly logging in. (The login page uses a switch statement)
+            //to navigate to the correct page
+            login.putExtra("Intent", "favourites");
+            startActivity(login);
+        }
+        else{
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragcontent, favourites);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
     }
 
     //navigates to the profile page (fragment)

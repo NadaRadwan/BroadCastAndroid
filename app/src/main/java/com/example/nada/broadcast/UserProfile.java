@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -102,7 +103,7 @@ public class UserProfile extends AppCompatActivity implements MediaPlayer.OnErro
         dbRef.unauth(); //calling unauth invalidates the user token and logs them out o the application
         Toast.makeText(getApplicationContext(), "Successfully logged out", Toast.LENGTH_SHORT).show(); //display small window saying "settings saved"
         Intent i = new Intent(UserProfile.this, Home.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
-        startActivity(i); //navigates to the next page (summary)
+        startActivity(i); //navigates to the next page
     }
 
     public void changePassword(View view){
