@@ -39,16 +39,16 @@ public class Recording {
     }
 
     public String longDescription() {
+        //i took out the rating
         return  "Title: "+this.title + ";\n"
                 +"Email of user: " + this.email + ";\n"
                 + "Category: " + this.category + ";\n"
                 + "Description: " + this.description + ";\n"
-                + "Rating: " + this.rating + ";\n"
                 + "File: "+this.filename;
     }
 
     public String shortDescription() {
-        return  "Title: "+this.title + ";\n"
-                +"Rating: " + this.rating;
+        //i took out the rating
+        return  "Title: "+this.title + ";\n";
     }
 }

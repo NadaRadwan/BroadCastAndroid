@@ -157,6 +157,7 @@ public class BrowseCategoryFragment extends Fragment{
                 Bundle info = new Bundle();
 //                info.putString("description", recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1));
                 info.putString("description", recFullDescription);
+                info.putString("fileName", title);
                 ((Home) getActivity()).listening.setArguments(info);
 //                listening.setArguments(info);
 

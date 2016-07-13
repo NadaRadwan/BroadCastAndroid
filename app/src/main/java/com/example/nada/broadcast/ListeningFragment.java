@@ -14,8 +14,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -90,14 +93,45 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_listening, container, false);
 
-        TextView description = (TextView) view.findViewById(R.id.recordingDesc);
+        final TextView description = (TextView) view.findViewById(R.id.recordingDesc);
         try{ //null pointer exception throw if description is not passed
-            description.setText(getArguments().getString("description"));
+            String fileName=getArguments().getString("fileName");
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //fetching the recording with the specific name from the database
+            final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
+            final Query queryRef = userRef.orderByChild("title").equalTo(fileName); //looking for recording with specified title
+            queryRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                    Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
+                    Recording r=new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
+                    description.setText(r.longDescription());
+                    final TextView rrating = (TextView) getView().findViewById(R.id.RecordingRating);
+                    rrating.setText("rating: "+recording.get("rating").toString());
+                }
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+
+                // Get the data on a post that has been removed
+                @Override
+                public void onChildRemoved(DataSnapshot snapshot) {}
+
+                // Get the data on a post that has changed
+                @Override
+                public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
+            }); //end of query
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         }catch (Exception e){
             Toast.makeText(getContext(), "Nothing currently playing!", Toast.LENGTH_SHORT).show();
             FragmentTransaction tran=getActivity().getSupportFragmentManager().beginTransaction();
@@ -125,6 +159,88 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
         else{
             addFavButton.setImageResource(R.drawable.ic_addfavourites);
         }
+
+        RatingBar rr = (RatingBar) view.findViewById(R.id.ratingBar);
+        rr.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rate,
+                                        boolean fromUser) {
+                final float rating=rate;
+                System.out.println(String.valueOf(rating));
+
+                String fileDescription=getArguments().getString("description");
+                final String recName=fileDescription.substring(7,fileDescription.indexOf(";"));
+
+                // querying database to get recording with the specific name
+                final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
+                final Query queryRef = userRef.orderByChild("title").equalTo(recName); //looking for recording with specified title
+                queryRef.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                        Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
+                        //updating the rating
+                        Firebase updateRef = new Firebase("https://broadcast11.firebaseio.com/recordings/"+recording.get("title"));
+                        recording.put("rating", String.valueOf(rating));
+                        updateRef.updateChildren(recording);
+
+                        //update description
+                    }
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+
+                    // Get the data on a post that has been removed
+                    @Override
+                    public void onChildRemoved(DataSnapshot snapshot) {}
+
+                    // Get the data on a post that has changed
+                    @Override
+                    public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                        System.out.println("inside onChildChanged which is inside ListeningFragment");
+                        //////////////////////////////////////////////////////////////////////////////////
+                        String fileName=getArguments().getString("fileName");
+//
+                        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //fetching the recording with the specific name from the database
+                        final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
+                        final Query queryRef = userRef.orderByChild("title").equalTo(fileName); //looking for recording with specified title
+                        queryRef.addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+
+                                View view = inflater.inflate(R.layout.fragment_listening, container, false);
+                                TextView rrating = (TextView) view.findViewById(R.id.RecordingRating);
+
+                                Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
+                                Recording r=new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
+                                rrating.setText("rating: "+recording.get("rating").toString());
+                            }
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+
+                            // Get the data on a post that has been removed
+                            @Override
+                            public void onChildRemoved(DataSnapshot snapshot) {}
+
+                            // Get the data on a post that has changed
+                            @Override
+                            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                            }
+
+                            @Override
+                            public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
+                        }); //end of query
+                        /////////////////////////////////////////////////////////////////////////////////
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
+                }); //end of query
+
+
+            }
+        });
 
         return view;
     }
@@ -222,8 +338,7 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 
                     // Get the data on a post that has changed
                     @Override
-                    public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
-                    }
+                    public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {}
 
                     @Override
                     public void onChildMoved(DataSnapshot snapshot, String previousChildKey) {
@@ -265,13 +380,6 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 //
 //        return false;
     }
-
-
-
-
-
-
-
 
 
 

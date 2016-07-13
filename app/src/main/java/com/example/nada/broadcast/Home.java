@@ -78,6 +78,8 @@ public class Home extends FragmentActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragcontent, listening);
         transaction.addToBackStack(null);
+        transaction.detach(listening);
+        transaction.attach(listening);
         transaction.commit();
     }
 
@@ -120,8 +122,8 @@ public class Home extends FragmentActivity {
             //adding the favourites fragment to a stack so that we go to it when we call an intent on Home
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragcontent, favourites);
-            transaction.add(favourites, "f");
-            transaction.add(favourites, "f");
+//            transaction.add(favourites, "f");
+//            transaction.add(favourites, "f");
             Intent login = new Intent(Home.this, LoginActivity.class);
 
             //pass the string name of the page that the user wants to navigate to, to the login page so the login page can
@@ -134,6 +136,8 @@ public class Home extends FragmentActivity {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragcontent, favourites);
             transaction.addToBackStack(null);
+            transaction.detach(favourites);
+            transaction.attach(favourites);
             transaction.commit();
         }
     }

@@ -81,6 +81,7 @@ public class FavouritesFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_favourites, container, false);
 
+
         if (savedInstanceState != null) {
             return getView() ;
         }
@@ -112,7 +113,19 @@ public class FavouritesFragment extends Fragment {
 
             // Get the data on a post that has changed
             @Override
-            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {}
+            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                Map<String, Object> favourite = (Map<String, Object>) snapshot.getValue();
+                //adding to list
+                String recTitle = favourite.get("favourite").toString();
+                recordings.add(recTitle);
+                adapter = new ArrayAdapter<>(
+                        getActivity(),
+                        android.R.layout.simple_list_item_1,
+                        recordings);
+
+                ListView l = (ListView) view.findViewById(R.id.favouritesList);
+                l.setAdapter(adapter);
+            }
 
             @Override
             public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
@@ -148,6 +161,7 @@ public class FavouritesFragment extends Fragment {
                         Bundle info = new Bundle();
 //                info.putString("description", recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1));
                         info.putString("description", recFullDescription);
+                        info.putString("fileName", recording.get("title").toString());
                         ((Home) getActivity()).listening.setArguments(info);
 //                listening.setArguments(info);
 
