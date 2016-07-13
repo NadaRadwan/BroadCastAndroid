@@ -29,7 +29,7 @@ public class UserProfile extends AppCompatActivity {
 
     //private MediaPlayer player;
     Firebase dbRef;
-    SharedPreferences sharedpreferences;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class UserProfile extends AppCompatActivity {
         //connecting to the db
         dbRef=new Firebase("https://broadcast11.firebaseio.com/");
 
-        sharedpreferences= PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
 
         //populating the user rating
         final TextView rating = (TextView) findViewById(R.id.rating);
@@ -50,7 +50,7 @@ public class UserProfile extends AppCompatActivity {
 
         // Get a reference to our posts
         Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/users/");
-        Query queryRef = userRef.orderByChild("email").equalTo(sharedpreferences.getString("userEmail","")); //looking for user with specified email address
+        Query queryRef = userRef.orderByChild("email").equalTo(sharedPreferences.getString("userEmail","")); //looking for user with specified email address
         queryRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChild) {
@@ -104,15 +104,19 @@ public class UserProfile extends AppCompatActivity {
 
     public void logout(){
         dbRef.unauth(); //calling unauth invalidates the user token and logs them out o the application
+        final SharedPreferences.Editor e=sharedPreferences.edit();
+        e.putString("userEmail", ""); //setting userEmail to empty
+        e.apply();
+
         Toast.makeText(getApplicationContext(), "Successfully logged out", Toast.LENGTH_SHORT).show(); //display small window saying "settings saved"
+
         Intent i=new Intent(UserProfile.this, Home.class);
-        i.putExtra("fragmentNav", "browse");
         startActivity(i);
     }
 
     public void changePassword(View view){
         if(dbRef.getAuth()!=null) { //you are still signed in
-            String email=sharedpreferences.getString("userEmail",""); //retrieving user email from shared prefernces
+            String email=sharedPreferences.getString("userEmail",""); //retrieving user email from shared prefernces
 
             EditText oldPassword = (EditText) findViewById(R.id.oldPassword);
             EditText newPassword = (EditText) findViewById(R.id.newPassword);

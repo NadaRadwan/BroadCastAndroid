@@ -1,6 +1,7 @@
 package com.example.nada.broadcast;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -180,43 +181,55 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
         }
         else{
 
-            Toast.makeText(getContext(), "Successfully added to favourites", Toast.LENGTH_SHORT).show();
+            if(sharedpreferences.getString("userEmail","").equals("")){
+                Toast.makeText(getContext(), "You should log in", Toast.LENGTH_SHORT).show();
+                Intent i=new Intent(getActivity(), LoginActivity.class);
+                //i.putExtra("Intent", "listen");
+                startActivity(i);
+            }else {
+                Toast.makeText(getContext(), "Successfully added to favourites", Toast.LENGTH_SHORT).show();
 
-            //adding recording to favourites
-            final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/users/");
-            final Query queryRef = userRef.orderByChild("email").equalTo(sharedpreferences.getString("userEmail","")); //looking for user with specified email address
-            queryRef.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot snapshot, String previousChild) {
-                    String name=snapshot.getKey();
-                    final Firebase favRef = new Firebase("https://broadcast11.firebaseio.com/favourites/");
-                    Map<String, Object> user = (Map<String, Object>) snapshot.getValue();
+                //adding recording to favourites
+                final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/users/");
+                final Query queryRef = userRef.orderByChild("email").equalTo(sharedpreferences.getString("userEmail", "")); //looking for user with specified email address
+                queryRef.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                        String name = snapshot.getKey();
+                        final Firebase favRef = new Firebase("https://broadcast11.firebaseio.com/favourites/");
+                        Map<String, Object> user = (Map<String, Object>) snapshot.getValue();
 
-                    //getting title of recording
-                    String fileDescription=getArguments().getString("description");
-                    String recName=fileDescription.substring(7,fileDescription.indexOf(";"));
+                        //getting title of recording
+                        String fileDescription = getArguments().getString("description");
+                        String recName = fileDescription.substring(7, fileDescription.indexOf(";"));
 
-                    //adding fto favourites
-                    Map<String, String> post1 = new HashMap<String, String>();
-                    post1.put("email", sharedpreferences.getString("userEmail",""));
-                    post1.put("favourite", recName);
-                    favRef.push().setValue(post1);
-                }
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+                        //adding fto favourites
+                        Map<String, String> post1 = new HashMap<String, String>();
+                        post1.put("email", sharedpreferences.getString("userEmail", ""));
+                        post1.put("favourite", recName);
+                        favRef.push().setValue(post1);
+                    }
 
-                // Get the data on a post that has been removed
-                @Override
-                public void onChildRemoved(DataSnapshot snapshot) {}
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        System.out.println("The read failed: " + firebaseError.getMessage());
+                    }
 
-                // Get the data on a post that has changed
-                @Override
-                public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {}
+                    // Get the data on a post that has been removed
+                    @Override
+                    public void onChildRemoved(DataSnapshot snapshot) {
+                    }
 
-                @Override
-                public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
-            });
+                    // Get the data on a post that has changed
+                    @Override
+                    public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                    }
 
+                    @Override
+                    public void onChildMoved(DataSnapshot snapshot, String previousChildKey) {
+                    }
+                });
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,42 +38,30 @@ public class Home extends FragmentActivity {
         dbRef=new Firebase("https://broadcast11.firebaseio.com/");
         sharedpreferences= PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (findViewById(R.id.fragcontent) != null){
+        if (findViewById(R.id.fragcontent) != null) {
 
-            try{
-                if(getIntent().getExtras().getString("fragmentNav").equals("favourites")){
-                    favourites.setArguments(getIntent().getExtras());
-
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragcontent, favourites).commit();
-                }
-            }catch (Exception e){
-
+//            try {
+//                if (getIntent().getExtras().getString("fragmentNav").equals("favourites")) {
+//                    System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwe are going yo favorites");
+//                    favourites.setArguments(getIntent().getExtras());
+//
+//                    getSupportFragmentManager().beginTransaction().replace(R.id.fragcontent, favourites).commit();
+//                } else if (getIntent().getExtras().getString("fragmentNav").equals("listen")) {
+//                    System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwe are going yo listen");
+//                    listening.setArguments(getIntent().getExtras());
+//
+//                    getSupportFragmentManager().beginTransaction().replace(R.id.fragcontent, listening).commit();
+//                }
+//            } catch (Exception e) {
                 if (savedInstanceState != null) {
                     return;
                 }
 
                 browse.setArguments(getIntent().getExtras());
-
                 getSupportFragmentManager().beginTransaction().add(R.id.fragcontent, browse).commit();
             }
-
-        }
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()){
-//            case R.id.profile:
-//                break;
-//        }
-//        return true;
-//    }
 
     //navigates to the browse page (fragment)
     public void toBrowsePage(View view){
@@ -92,7 +81,7 @@ public class Home extends FragmentActivity {
         transaction.commit();
     }
 
-    //navigates to the favourites page (activity)
+    //navigates to the recordActivity page (activity)
     public void toRecordActivity (View view){
 
 
@@ -128,6 +117,11 @@ public class Home extends FragmentActivity {
         }
 
         if (!isLoggedIn){
+            //adding the favourites fragment to a stack so that we go to it when we call an intent on Home
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragcontent, favourites);
+            transaction.add(favourites, "f");
+            transaction.add(favourites, "f");
             Intent login = new Intent(Home.this, LoginActivity.class);
 
             //pass the string name of the page that the user wants to navigate to, to the login page so the login page can

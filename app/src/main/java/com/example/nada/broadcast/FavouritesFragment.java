@@ -76,9 +76,10 @@ public class FavouritesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        recordings.clear(); //to clear the list everytime onCreateView is called (to avoid duplicate entries)
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_favourites, container, false);
+        final View view = inflater.inflate(R.layout.fragment_favourites, container, false);
 
         if (savedInstanceState != null) {
             return getView() ;
@@ -95,11 +96,11 @@ public class FavouritesFragment extends Fragment {
                 String recTitle = favourite.get("favourite").toString();
                 recordings.add(recTitle);
                 adapter = new ArrayAdapter<>(
-                        getContext(),
+                        getActivity(),
                         android.R.layout.simple_list_item_1,
                         recordings);
 
-                ListView l = (ListView) getActivity().findViewById(R.id.favouritesList);
+                ListView l = (ListView) view.findViewById(R.id.favouritesList);
                 l.setAdapter(adapter);
             }
             @Override
@@ -173,7 +174,6 @@ public class FavouritesFragment extends Fragment {
 
             }
         });
-
 
 
         return view;

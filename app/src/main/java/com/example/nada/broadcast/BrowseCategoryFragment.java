@@ -88,9 +88,10 @@ public class BrowseCategoryFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        recordings.clear();//to clear the list eveytime onCreateView is called (to avoid duplicate entries)
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_browse_category, container, false);
+        final View view = inflater.inflate(R.layout.fragment_browse_category, container, false);
 
         // querying database to get all recordings in this specific category
         Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
@@ -110,7 +111,7 @@ public class BrowseCategoryFragment extends Fragment{
                         android.R.layout.simple_list_item_1,
                         recordings);
 
-                ListView l = (ListView) getActivity().findViewById(R.id.recordingsList);
+                ListView l = (ListView) view.findViewById(R.id.recordingsList);
                 l.setAdapter(adapter);
             }
             @Override

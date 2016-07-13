@@ -222,14 +222,18 @@ public class LoginActivity extends AppCompatActivity {
                                 break;
                             case "profile":
                                 Intent profile = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
-                                //sending the email used to login
-                                //profile.putExtra("email", mEmail);
                                 startActivity(profile); //navigates to the next page (userProfile)
                                 break;
+//                            case "listen":
+//                                Intent listen = new Intent(LoginActivity.this, Home.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+//                                listen.putExtra("fragmentNav", "listen");
+//                                startActivity(listen);
+//                                break;
                         }
                     }
                     else{
-                        //YOU WILL NEVER COME TO THE LOGIN PAGE AND NOT BE PASSED AN INTENT
+                        Intent i= new Intent(LoginActivity.this, Home.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+                        startActivity(i);
 
                     }
 
