@@ -166,7 +166,9 @@ public class LoginActivity extends AppCompatActivity {
     public void register(View view){
         //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
         Intent i = new Intent(LoginActivity.this, RegisterPage.class);
-        i.putExtra("Intent", getIntent().getExtras().getString("Intent"));
+        if(getIntent().hasExtra("Intent")) {
+            i.putExtra("Intent", getIntent().getExtras().getString("Intent"));
+        }
         startActivity(i); //navigates to the next page (RegisterPage)
     }
     /**
@@ -215,11 +217,11 @@ public class LoginActivity extends AppCompatActivity {
                                 Intent record = new Intent(LoginActivity.this, Record.class);
                                 startActivity(record);
                                 break;
-                            case "favourites":
-                                Intent favourite=new Intent(LoginActivity.this, Home.class);
-                                favourite.putExtra("fragmentNav", "favourites");
-                                startActivity(favourite);
-                                break;
+//                            case "favourites":
+//                                Intent favourite=new Intent(LoginActivity.this, Home.class);
+//                                favourite.putExtra("fragmentNav", "favourites");
+//                                startActivity(favourite);
+//                                break;
                             case "profile":
                                 Intent profile = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
                                 startActivity(profile); //navigates to the next page (userProfile)
@@ -232,6 +234,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                     else{
+                        System.out.println("we are in the else");
                         Intent i= new Intent(LoginActivity.this, Home.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
                         startActivity(i);
 

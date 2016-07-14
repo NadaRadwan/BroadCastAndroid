@@ -140,16 +140,20 @@ public class RegisterPage extends AppCompatActivity {
 //                                            favourite.putExtra("fragmentNav", "favourites");
 //                                            startActivity(favourite);
 //                                            break;
-//                                        case "profile":
-//                                            Intent profile = new Intent(RegisterPage.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
-//                                            startActivity(profile); //navigates to the next page (userProfile)
-//                                            break;
+                                        case "profile":
+                                            Intent profile = new Intent(RegisterPage.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+                                            startActivity(profile); //navigates to the next page (userProfile)
+                                            break;
 //                                        case "listen":
 //                                            Intent listen = new Intent(RegisterPage.this, Home.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
 //                                            listen.putExtra("fragmentNav", "listen");
 //                                            startActivity(listen);
 //                                            break;
                                     }
+                                }else{
+                                    Intent i= new Intent(RegisterPage.this, Home.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+                                    startActivity(i);
+
                                 }
                             }
 

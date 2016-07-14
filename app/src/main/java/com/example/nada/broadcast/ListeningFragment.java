@@ -52,16 +52,6 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
     Firebase dbRef; //reference to the database
     SharedPreferences sharedpreferences;
 
-//    // TODO: Rename parameter arguments, choose names that match
-//    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
-//
-//    // TODO: Rename and change types of parameters
-//    private String mParam1;
-//    private String mParam2;
-//
-//    private OnFragmentInteractionListener mListener;
 
     public ListeningFragment() {
         // Required empty public constructor
@@ -104,30 +94,29 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 
 
         final TextView description = (TextView) view.findViewById(R.id.recordingDesc);
-        try{ //null pointer exception throw if description is not passed
-            String fileName=getArguments().getString("fileName");
+        try{ //null pointer exception throw if description is not passed which is the case when nothing is currently playing
+            String recTitle=getArguments().getString("recTitle");
 
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //fetching the recording with the specific name from the database
             final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
-            final Query queryRef = userRef.orderByChild("title").equalTo(fileName); //looking for recording with specified title
+            final Query queryRef = userRef.orderByChild("title").equalTo(recTitle); //looking for recording with specified title
             queryRef.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                    // Inflate the layout for this fragment
+                    View view = inflater.inflate(R.layout.fragment_listening, container, false);//always inflate so as to allow access to xml file elements
                     Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
                     Recording r=new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
-                    description.setText(r.longDescription());
+                    description.setText(r.displayOnForm());
                     final TextView rrating = (TextView) getView().findViewById(R.id.RecordingRating);
                     rrating.setText("rating: "+recording.get("rating").toString());
                 }
                 @Override
                 public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
 
-                // Get the data on a post that has been removed
                 @Override
                 public void onChildRemoved(DataSnapshot snapshot) {}
 
-                // Get the data on a post that has changed
                 @Override
                 public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
                 }
@@ -135,7 +124,6 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
                 @Override
                 public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
             }); //end of query
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         }catch (Exception e){
 
@@ -191,7 +179,17 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
                         Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
                         //updating the rating
                         Firebase updateRef = new Firebase("https://broadcast11.firebaseio.com/recordings/"+recording.get("title"));
-                        recording.put("rating", String.valueOf(rating));
+
+                        float oldNumRaters=Integer.parseInt(recording.get("numRaters").toString());
+                        recording.put("numRaters",Long.toString((Long.parseLong(recording.get("numRaters").toString())+1)));
+                        float newNumRaters=Float.parseFloat(recording.get("numRaters").toString());
+                        float oldRating=Float.parseFloat(recording.get("rating").toString());
+                        float newRating= (float)rating;
+                        float updatedRating= oldRating*(oldNumRaters/newNumRaters)+newRating*(1/newNumRaters);
+                        double toInsert=0.5*Math.round(updatedRating/0.5);
+                        System.out.println(updatedRating);
+                        System.out.println(toInsert);
+                        recording.put("rating", Double.toString(toInsert));
                         updateRef.updateChildren(recording);
 
                         //update description
@@ -208,12 +206,12 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
                     public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
                         System.out.println("inside onChildChanged which is inside ListeningFragment");
                         //////////////////////////////////////////////////////////////////////////////////
-                        String fileName=getArguments().getString("fileName");
+                        String recTitle=getArguments().getString("recTitle");
 //
                         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                         //fetching the recording with the specific name from the database
                         final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
-                        final Query queryRef = userRef.orderByChild("title").equalTo(fileName); //looking for recording with specified title
+                        final Query queryRef = userRef.orderByChild("title").equalTo(recTitle); //looking for recording with specified title
                         queryRef.addChildEventListener(new ChildEventListener() {
                             @Override
                             public void onChildAdded(DataSnapshot snapshot, String previousChild) {
