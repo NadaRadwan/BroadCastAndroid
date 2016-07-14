@@ -83,7 +83,7 @@ public class Record extends AppCompatActivity {
     //start and stop recording
     public void startRecording(View view) throws IOException{
         if (!isRecording){
-
+            Toast.makeText(getApplicationContext(), "Started Recording", Toast.LENGTH_SHORT).show();
             recordButton.setImageResource(R.drawable.recordpressed);
 
             isRecording = true;
@@ -105,6 +105,7 @@ public class Record extends AppCompatActivity {
             }
         }
         else {
+            Toast.makeText(getApplicationContext(), "Stopped Recording", Toast.LENGTH_SHORT).show();
             stopButton.setEnabled(false);
             playButton.setEnabled(true);
 
@@ -177,9 +178,8 @@ public class Record extends AppCompatActivity {
             Firebase recordingRef = dbRef.child("recordings").child(recordingName);
             Recording r=new Recording(recordingName, filename, sharedPreferences.getString("userEmail",""), category, description); //PASS CORRECT USERNAME
             recordingRef.setValue(r);
+            Toast.makeText(getApplicationContext(), "Successfully uploaded", Toast.LENGTH_SHORT).show();
         }
-
-        Toast.makeText(getApplicationContext(), "Successfully uploaded", Toast.LENGTH_SHORT).show();
     }
 
     //dialog to make sure user wants to overrite their recording

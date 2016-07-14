@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -38,9 +39,9 @@ import java.util.Map;
 // */
 public class BrowseCategoryFragment extends Fragment{
 
-    protected ArrayList<String> recordings = new ArrayList<>();
+    protected ArrayList<Recording> recordings = new ArrayList<>();
     protected ArrayList<Recording> recordingsLongDesc = new ArrayList<>();
-    protected ArrayAdapter<String> adapter; //used to populate the list view
+    protected RecordingAdapter adapter; //used to populate the list view
 
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -107,13 +108,13 @@ public class BrowseCategoryFragment extends Fragment{
                     Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
                     //adding to list
                     Recording r = new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
-                    recordings.add(r.shortDescription());
+                    recordings.add(r);
                     recordingsLongDesc.add(r);
 
                     // ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    adapter = new ArrayAdapter<>(
+                    adapter = new RecordingAdapter(
                             getActivity(),
-                            android.R.layout.simple_list_item_1,
+                            R.layout.listitem,
                             recordings);
 
                     ListView l = (ListView) view.findViewById(R.id.recordingsList);
@@ -151,9 +152,10 @@ public class BrowseCategoryFragment extends Fragment{
                                         int position, long id) {
 
                     String recFullDescription = "";
-                    String recordingDesc = ((TextView) view).getText().toString();
+                    String recordingDesc = ((TextView)((LinearLayout) view).getChildAt(0)).getText().toString();
                     System.out.println("recodingDesc is " + recordingDesc);
-                    String title = recordingDesc.substring(7, recordingDesc.indexOf(";"));
+                    String title = recordingDesc;
+                   // String title = recordingDesc.substring(7, (recordingDesc.length()-1));
                     System.out.println("fileName is " + title);
                     for (int i = 0; i < recordingsLongDesc.size(); i++) {
                         if (recordingsLongDesc.get(i).getTitle().equals(title)) {

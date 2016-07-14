@@ -59,8 +59,8 @@
         android:layout_marginBottom="70dp" />
 
     <ImageView
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_width="170dp"
+        android:layout_height="227dp"
         android:id="@+id/imageView"
         android:layout_gravity="left|top"
         android:src="@drawable/music"
@@ -78,11 +78,10 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Medium Text"
             android:id="@+id/recordingDesc"
-            android:layout_gravity="top|right|center_horizontal"
             android:layout_marginTop="50dp"
-            android:layout_marginRight="50dp"
+            android:layout_marginRight="30dp"
             android:layout_marginBottom="10dp"
-            android:layout_marginLeft="50dp" />
+            android:layout_marginLeft="30dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -91,8 +90,8 @@
             android:text="Medium Text"
             android:id="@+id/RecordingRating"
             android:layout_gravity="bottom|center_horizontal|right"
-            android:layout_marginRight="50dp"
-            android:layout_marginLeft="50dp" />
+            android:layout_marginRight="30dp"
+            android:layout_marginLeft="30dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -144,13 +143,11 @@
                 android:layout_height="60dp"
                 android:id="@+id/pauseAudioButton"
                 android:layout_gravity="center_horizontal|bottom"
-                android:src="@drawable/pause"
+                android:src="@drawable/stop"
                 android:scaleType="fitCenter"
                 android:background="#00a0a0a0"
                 android:layout_margin="10dp" />
         </LinearLayout>
 
     </LinearLayout>
-
-
 </FrameLayout>
