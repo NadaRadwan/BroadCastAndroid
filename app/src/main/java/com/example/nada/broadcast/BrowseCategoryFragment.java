@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,7 +38,8 @@ import java.util.Map;
 public class BrowseCategoryFragment extends Fragment{
 
     protected ArrayList<String> recordings = new ArrayList<>();
-
+    protected ArrayList<Recording> recordingsLongDesc = new ArrayList<>();
+    protected ArrayAdapter<String> adapter; //used to populate the list view
 
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -72,14 +74,13 @@ public class BrowseCategoryFragment extends Fragment{
 //        return fragment;
 //    }
 //
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-//    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //NOTE: THE QUERY MUST BE IN ONCREATE BECAUSE IF IT IS IN ONCREATEVIEW, IT IS EXECUTED EVERYTIME WE NAVUAGTE TO THE FRAGMENT WHICH DUPLICATED THE ENTRIES IN THE LIST
+
+    }
 
 
 
@@ -87,74 +88,97 @@ public class BrowseCategoryFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_browse_category, container, false);
+        recordings.clear();//to clear the list eveytime onCreateView is called (to avoid duplicate entries)
 
+        // Inflate the layout for this fragment
+        final View view = inflater.inflate(R.layout.fragment_browse_category, container, false);
 
         // querying database to get all recordings in this specific category
-        Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
-        Query queryRef = userRef.orderByChild("category").equalTo(getArguments().getString("category").toString()); //looking for user with specified email address
-        queryRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot snapshot, String previousChild) {
-                Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
-                //adding to list
-                Recording r=new Recording(recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
-                recordings.add("Title: "+snapshot.getKey()+"\n"+r.shortDescription()+"\n");
+        if (getActivity() == null) {
+            ////to prevent calling the database when the fragment is detached from the Home activity which crashes the activity
+        }else {
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        getContext(),
-                        android.R.layout.simple_list_item_1,
-                        recordings);
+            Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
+            Query queryRef = userRef.orderByChild("category").equalTo(getArguments().getString("category").toString()); //looking for user with specified email address
+            queryRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                    Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
+                    //adding to list
+                    Recording r = new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
+                    recordings.add(r.shortDescription());
+                    recordingsLongDesc.add(r);
 
-                ListView l = (ListView) getActivity().findViewById(R.id.recordingsList);
-                l.setAdapter(adapter);
-            }
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+                    // ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    adapter = new ArrayAdapter<>(
+                            getActivity(),
+                            android.R.layout.simple_list_item_1,
+                            recordings);
 
-            // Get the data on a post that has been removed
-            @Override
-            public void onChildRemoved(DataSnapshot snapshot) {}
+                    ListView l = (ListView) view.findViewById(R.id.recordingsList);
+                    l.setAdapter(adapter);
+                }
 
-            // Get the data on a post that has changed
-            @Override
-            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {}
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    System.out.println("The read failed: " + firebaseError.getMessage());
+                }
 
-            @Override
-            public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
-        }); //end of query
+                // Get the data on a post that has been removed
+                @Override
+                public void onChildRemoved(DataSnapshot snapshot) {
+                }
+
+                // Get the data on a post that has changed
+                @Override
+                public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot snapshot, String previousChildKey) {
+                }
+            }); //end of query
+            //detecting which recording from the recording list is pressed
+            // ListView on item selected listener.
+
+            ListView l = (ListView) view.findViewById(R.id.recordingsList);
+
+            l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+
+                    String recFullDescription = "";
+                    String recordingDesc = ((TextView) view).getText().toString();
+                    System.out.println("recodingDesc is " + recordingDesc);
+                    String title = recordingDesc.substring(7, recordingDesc.indexOf(";"));
+                    System.out.println("fileName is " + title);
+                    for (int i = 0; i < recordingsLongDesc.size(); i++) {
+                        if (recordingsLongDesc.get(i).getTitle().equals(title)) {
+                            recFullDescription = recordingsLongDesc.get(i).longDescription();
+                        }
+                    }
+
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+
+                    ((Home) getActivity()).listening = new ListeningFragment();
+                    //                ListeningFragment listening = new ListeningFragment();
+                    Bundle info = new Bundle();
+                    //                info.putString("description", recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1));
+                    info.putString("description", recFullDescription);
+                    info.putString("recTitle", title);
+                    ((Home) getActivity()).listening.setArguments(info);
+                    //                listening.setArguments(info);
+
+                    transaction.replace(R.id.fragcontent, ((Home) getActivity()).listening);
+                    //                transaction.replace(R.id.fragcontent, listening);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
 
 
-        //detecting which recording from the recording list is pressed
-        // ListView on item selected listener.
-        ListView l= (ListView) view.findViewById(R.id.recordingsList);
-        l.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-
-                ((Home) getActivity()).listening = new ListeningFragment();
-//                ListeningFragment listening = new ListeningFragment();
-                Bundle info = new Bundle();
-                String recordingDesc=((TextView) view).getText().toString();
-                info.putString("filename", recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1));
-                ((Home) getActivity()).listening.setArguments(info);
-//                listening.setArguments(info);
-
-                transaction.replace(R.id.fragcontent, ((Home) getActivity()).listening);
-//                transaction.replace(R.id.fragcontent, listening);
-                transaction.addToBackStack(null);
-                transaction.commit();
-
-
-            }
-        });
-
+                }
+            });
+        }
         return view;
 
     }

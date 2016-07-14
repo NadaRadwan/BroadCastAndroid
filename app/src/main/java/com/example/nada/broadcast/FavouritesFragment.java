@@ -1,23 +1,36 @@
 package com.example.nada.broadcast;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FavouritesFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FavouritesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.Map;
+
 public class FavouritesFragment extends Fragment {
+
+    SharedPreferences sharedPreferences;
+    protected ArrayList<String> recordings = new ArrayList<>();
+    protected ArrayList<Recording> recordingsLongDesc = new ArrayList<>();
+    protected ArrayAdapter<String> adapter; //used to populate the list view
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
@@ -51,14 +64,11 @@ public class FavouritesFragment extends Fragment {
 //        return fragment;
 //    }
 //
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-//    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this.getContext());
+    }
 
 
 
@@ -66,11 +76,132 @@ public class FavouritesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        recordings.clear(); //to clear the list everytime onCreateView is called (to avoid duplicate entries)
+
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_favourites, container, false);
+        final View view = inflater.inflate(R.layout.fragment_favourites, container, false);
 
 
-        //GENERATE LIST FROM DB HERE
+        if (savedInstanceState != null) {
+            return getView() ;
+        }
+
+            // querying database to get all recordings in this specific category
+            Firebase favRef = new Firebase("https://broadcast11.firebaseio.com/favourites/");
+            Query queryRef = favRef.orderByChild("email").equalTo(sharedPreferences.getString("userEmail", "")); //looking for user with specified email address
+            queryRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                    Map<String, Object> favourite = (Map<String, Object>) snapshot.getValue();
+                    //adding to list
+                    String recTitle = favourite.get("favourite").toString();
+                    recordings.add(recTitle);
+                    adapter = new ArrayAdapter<>(
+                            getActivity(),
+                            android.R.layout.simple_list_item_1,
+                            recordings);
+
+                    ListView l = (ListView) view.findViewById(R.id.favouritesList);
+                    l.setAdapter(adapter);
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    System.out.println("The read failed: " + firebaseError.getMessage());
+                }
+
+                // Get the data on a post that has been removed
+                @Override
+                public void onChildRemoved(DataSnapshot snapshot) {
+                }
+
+                // Get the data on a post that has changed
+                @Override
+                public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                    Map<String, Object> favourite = (Map<String, Object>) snapshot.getValue();
+                    //adding to list
+                    String recTitle = favourite.get("favourite").toString();
+                    recordings.add(recTitle);
+                    adapter = new ArrayAdapter<>(
+                            getActivity(),
+                            android.R.layout.simple_list_item_1,
+                            recordings);
+
+                    ListView l = (ListView) view.findViewById(R.id.favouritesList);
+                    l.setAdapter(adapter);
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot snapshot, String previousChildKey) {
+                }
+            }); //end of query
+            //detecting which recording from the recording list is pressed
+            // ListView on item selected listener.
+
+            ListView li = (ListView) view.findViewById(R.id.favouritesList);
+            li.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    String recordingName = ((TextView) view).getText().toString();
+                    System.out.println("recodingName is " + recordingName);
+
+                    //we need the recFullDescription
+                    // querying database to get all recordings in this specific category
+                    Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
+                    Query queryRef = userRef.orderByChild("title").equalTo(recordingName); //looking for user with specified email address
+                    queryRef.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                            if(getActivity()==null){
+                                //to prevent calling the database when the fragment is detached from the Home activity which crashes the activity
+                            }else {
+                                Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
+                                //adding to list
+                                Recording r = new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
+
+                                String recFullDescription = r.longDescription();
+                                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+
+                                ((Home) getActivity()).listening = new ListeningFragment();
+                                //                ListeningFragment listening = new ListeningFragment();
+                                Bundle info = new Bundle();
+                                //                info.putString("description", recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1));
+                                info.putString("description", recFullDescription);
+                                info.putString("recTitle", recording.get("title").toString());
+                                ((Home) getActivity()).listening.setArguments(info);
+                                //                listening.setArguments(info);
+
+                                transaction.replace(R.id.fragcontent, ((Home) getActivity()).listening);
+                                //                transaction.replace(R.id.fragcontent, listening);
+                                transaction.addToBackStack(null);
+                                transaction.commit();
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                            System.out.println("The read failed: " + firebaseError.getMessage());
+                        }
+
+                        // Get the data on a post that has been removed
+                        @Override
+                        public void onChildRemoved(DataSnapshot snapshot) {
+                        }
+
+                        // Get the data on a post that has changed
+                        @Override
+                        public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                        }
+
+                        @Override
+                        public void onChildMoved(DataSnapshot snapshot, String previousChildKey) {
+                        }
+                    }); //end of query
+
+                }
+            });
 
 
         return view;

@@ -1,9 +1,12 @@
 package com.example.nada.broadcast;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -11,9 +14,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.RatingBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 ///**
@@ -25,16 +44,10 @@ import java.io.IOException;
 // * create an instance of this fragment.
 // */
 public class ListeningFragment extends Fragment implements View.OnClickListener{
-//    // TODO: Rename parameter arguments, choose names that match
-//    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
-//
-//    // TODO: Rename and change types of parameters
-//    private String mParam1;
-//    private String mParam2;
-//
-//    private OnFragmentInteractionListener mListener;
+
+    Firebase dbRef; //reference to the database
+    SharedPreferences sharedpreferences;
+
 
     public ListeningFragment() {
         // Required empty public constructor
@@ -65,14 +78,57 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        dbRef=new Firebase("https://broadcast11.firebaseio.com/");
+        sharedpreferences= PreferenceManager.getDefaultSharedPreferences(this.getContext());
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_listening, container, false);
+
+        final TextView description = (TextView) view.findViewById(R.id.recordingDesc);
+        try{ //null pointer exception throw if description is not passed which is the case when nothing is currently playing
+            String recTitle=getArguments().getString("recTitle");
+
+            //fetching the recording with the specific name from the database
+            final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
+            final Query queryRef = userRef.orderByChild("title").equalTo(recTitle); //looking for recording with specified title
+            queryRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                    // Inflate the layout for this fragment
+                    View view = inflater.inflate(R.layout.fragment_listening, container, false);//always inflate so as to allow access to xml file elements
+                    Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
+                    Recording r=new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
+                    description.setText(r.displayOnForm());
+                    final TextView rrating = (TextView) getView().findViewById(R.id.RecordingRating);
+                    rrating.setText("rating: "+recording.get("rating").toString());
+                }
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+
+                @Override
+                public void onChildRemoved(DataSnapshot snapshot) {}
+
+                @Override
+                public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
+            }); //end of query
+
+        }catch (Exception e){
+            Toast.makeText(getContext(), "Nothing currently playing!", Toast.LENGTH_SHORT).show();
+            FragmentTransaction tran=getActivity().getSupportFragmentManager().beginTransaction();
+            tran.replace(R.id.fragcontent, ((Home)getActivity()).browse );
+            tran.addToBackStack(null);
+            tran.commit();
+        }
+
+
 
         //set onclick listeners
         ImageButton playAudioButton = (ImageButton) view.findViewById(R.id.playAudioButton);
@@ -91,6 +147,98 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
         else{
             addFavButton.setImageResource(R.drawable.ic_addfavourites);
         }
+
+        RatingBar rr = (RatingBar) view.findViewById(R.id.ratingBar);
+        rr.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rate,
+                                        boolean fromUser) {
+                final float rating=rate;
+                System.out.println(String.valueOf(rating));
+
+                String fileDescription=getArguments().getString("description");
+                final String recName=fileDescription.substring(7,fileDescription.indexOf(";"));
+
+                // querying database to get recording with the specific name
+                final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
+                final Query queryRef = userRef.orderByChild("title").equalTo(recName); //looking for recording with specified title
+                queryRef.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                        Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
+                        //updating the rating
+                        Firebase updateRef = new Firebase("https://broadcast11.firebaseio.com/recordings/"+recording.get("title"));
+
+                        float oldNumRaters=Integer.parseInt(recording.get("numRaters").toString());
+                        recording.put("numRaters",Long.toString((Long.parseLong(recording.get("numRaters").toString())+1)));
+                        float newNumRaters=Float.parseFloat(recording.get("numRaters").toString());
+                        float oldRating=Float.parseFloat(recording.get("rating").toString());
+                        float newRating= (float)rating;
+                        float updatedRating= oldRating*(oldNumRaters/newNumRaters)+newRating*(1/newNumRaters);
+                        double toInsert=0.5*Math.round(updatedRating/0.5);
+                        System.out.println(updatedRating);
+                        System.out.println(toInsert);
+                        recording.put("rating", Double.toString(toInsert));
+                        updateRef.updateChildren(recording);
+
+                        //update description
+                    }
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+
+                    // Get the data on a post that has been removed
+                    @Override
+                    public void onChildRemoved(DataSnapshot snapshot) {}
+
+                    // Get the data on a post that has changed
+                    @Override
+                    public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                        System.out.println("inside onChildChanged which is inside ListeningFragment");
+                        //////////////////////////////////////////////////////////////////////////////////
+                        String recTitle=getArguments().getString("recTitle");
+//
+                        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //fetching the recording with the specific name from the database
+                        final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
+                        final Query queryRef = userRef.orderByChild("title").equalTo(recTitle); //looking for recording with specified title
+                        queryRef.addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+
+                                View view = inflater.inflate(R.layout.fragment_listening, container, false);
+                                TextView rrating = (TextView) view.findViewById(R.id.RecordingRating);
+
+                                Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
+                                Recording r=new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
+                                rrating.setText("rating: "+recording.get("rating").toString());
+                            }
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+
+                            // Get the data on a post that has been removed
+                            @Override
+                            public void onChildRemoved(DataSnapshot snapshot) {}
+
+                            // Get the data on a post that has changed
+                            @Override
+                            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                            }
+
+                            @Override
+                            public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
+                        }); //end of query
+                        /////////////////////////////////////////////////////////////////////////////////
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
+                }); //end of query
+
+
+            }
+        });
 
         return view;
     }
@@ -120,10 +268,11 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 //        FragmentManager.BackStackEntry backEntry = getFragmentManager().getBackStackEntryAt(getActivity().getFragmentManager().getBackStackEntryCount()-1);
 //        String str=backEntry.getName().toLowerCase();
         //Fragment fragment=getFragmentManager().findFragmentByTag(str);
-
-        if(getArguments().getString("filename") != null) {
+        String fileDescription=getArguments().getString("description");
+        String fileName=fileDescription.substring(fileDescription.indexOf("/"));
+        if(fileName != null) {
             try {
-                player.setDataSource(getArguments().getString("filename").toString()); //playing the extracted file name
+                player.setDataSource(fileName); //playing the extracted file name
                 player.prepare();
                 player.start();
             } catch (IOException e) {
@@ -139,26 +288,96 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 
     //adds or removes current file to or from user's favourites
     public void addRemoveFavourites(View v){
+        String s=getArguments().getString("description");
+
         if (inFavourites()){
             //implement remove from favourites
         }
         else{
-            //implement add to favourites
+
+            if(sharedpreferences.getString("userEmail","").equals("")){
+                Toast.makeText(getContext(), "You should log in", Toast.LENGTH_SHORT).show();
+                Intent i=new Intent(getActivity(), LoginActivity.class);
+                //i.putExtra("Intent", "listen");
+                startActivity(i);
+            }else {
+                Toast.makeText(getContext(), "Successfully added to favourites", Toast.LENGTH_SHORT).show();
+
+                //adding recording to favourites
+                final Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/users/");
+                final Query queryRef = userRef.orderByChild("email").equalTo(sharedpreferences.getString("userEmail", "")); //looking for user with specified email address
+                queryRef.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                        String name = snapshot.getKey();
+                        final Firebase favRef = new Firebase("https://broadcast11.firebaseio.com/favourites/");
+                        Map<String, Object> user = (Map<String, Object>) snapshot.getValue();
+
+                        //getting title of recording
+                        String fileDescription = getArguments().getString("description");
+                        String recName = fileDescription.substring(7, fileDescription.indexOf(";"));
+
+                        //adding fto favourites
+                        Map<String, String> post1 = new HashMap<String, String>();
+                        post1.put("email", sharedpreferences.getString("userEmail", ""));
+                        post1.put("favourite", recName);
+                        favRef.push().setValue(post1);
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        System.out.println("The read failed: " + firebaseError.getMessage());
+                    }
+
+                    // Get the data on a post that has been removed
+                    @Override
+                    public void onChildRemoved(DataSnapshot snapshot) {
+                    }
+
+                    // Get the data on a post that has changed
+                    @Override
+                    public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {}
+
+                    @Override
+                    public void onChildMoved(DataSnapshot snapshot, String previousChildKey) {
+                    }
+                });
+            }
         }
     }
 
     //checks if current audio file is already in user's favourites
     public boolean inFavourites(){
-        //to implement
         return false;
+        //getting title of recording
+//        String fileDescription=getArguments().getString("description");
+//        final String recName=fileDescription.substring(7,fileDescription.indexOf(";"));
+//
+//
+//        //check if userName has been previously found in the database
+//            Firebase favRef = new Firebase("https://broadcast11.firebaseio.com/favourites/");
+//            // Attach an listener to read the data at our users reference
+//            favRef.addValueEventListener(new ValueEventListener() {
+//
+//                @Override
+//                public void onDataChange(DataSnapshot snapshot) {
+//                    for (DataSnapshot userSnapshot: snapshot.getChildren()) {
+//                        Map<String, Object> favourite = (Map<String, Object>) snapshot.getValue();
+//                        if (favourite.get("favourite").equals(recName) && favourite.get("email").equals(sharedpreferences.getString("userEmail",""))){
+//                            return false;
+//                        }
+//                    }
+//                }
+//                @Override
+//                public void onCancelled(FirebaseError firebaseError) {
+//                    System.out.println("The read failed: " + firebaseError.getMessage());
+//                }
+//            });
+//
+//
+//
+//        return false;
     }
-
-
-
-
-
-
-
 
 
 

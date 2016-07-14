@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 
@@ -165,7 +166,9 @@ public class LoginActivity extends AppCompatActivity {
     public void register(View view){
         //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
         Intent i = new Intent(LoginActivity.this, RegisterPage.class);
-        i.putExtra("Intent", getIntent().getExtras().getString("Intent"));
+        if(getIntent().hasExtra("Intent")) {
+            i.putExtra("Intent", getIntent().getExtras().getString("Intent"));
+        }
         startActivity(i); //navigates to the next page (RegisterPage)
     }
     /**
@@ -214,33 +217,27 @@ public class LoginActivity extends AppCompatActivity {
                                 Intent record = new Intent(LoginActivity.this, Record.class);
                                 startActivity(record);
                                 break;
-                            //These next scenarios will be different because they are fragments, not activities.
-                            //I will implement later.
 //                            case "favourites":
-//                                Intent record = new Intent(LoginActivity.this, Record.class);
-//                                startActivity(record);
+//                                Intent favourite=new Intent(LoginActivity.this, Home.class);
+//                                favourite.putExtra("fragmentNav", "favourites");
+//                                startActivity(favourite);
 //                                break;
-//                            case "record":
-//                                Intent record = new Intent(LoginActivity.this, Record.class);
-//                                startActivity(record);
-//                                break;
-                        }
-
-                        switch (intentinfo.getString("Intent")){
                             case "profile":
                                 Intent profile = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
-                                //sending the email used to login
-                                profile.putExtra("email", mEmail);
                                 startActivity(profile); //navigates to the next page (userProfile)
                                 break;
+//                            case "listen":
+//                                Intent listen = new Intent(LoginActivity.this, Home.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+//                                listen.putExtra("fragmentNav", "listen");
+//                                startActivity(listen);
+//                                break;
                         }
                     }
                     else{
-                        //YOU WILL NEVER COME TO THE LOGIN PAGE AND NOT BE PASSED AN INTENT
-//                        Intent i = new Intent(LoginActivity.this, UserProfile.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
-//                        //sending the email used to login
-//                        i.putExtra("email", mEmail);
-//                        startActivity(i); //navigates to the next page (userProfile)
+                        System.out.println("we are in the else");
+                        Intent i= new Intent(LoginActivity.this, Home.class); //create a new intent that creates a new activity and allows us to pass parameters between the current activity and the created activity
+                        startActivity(i);
+
                     }
 
                 }

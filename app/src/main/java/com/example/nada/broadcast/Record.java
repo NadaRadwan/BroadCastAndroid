@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.app.AlertDialog;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 
@@ -143,16 +144,19 @@ public class Record extends AppCompatActivity {
         String description = ((EditText) findViewById(R.id.description)).getText().toString();
 
         if (recordingName.isEmpty()){
-            ((EditText) findViewById(R.id.recordingName)).setError("Please set a title");
+            ((EditText) findViewById(R.id.recordingName)).setError("Please specify the recording title");
+        }else if(description.isEmpty()){
+            ((EditText) findViewById(R.id.description)).setError("Please enter a description");
         }
         else{
             //creating entry in recordings table  storing recordingName, recording, userName, rating, category and description
             //primary key is recordingName!
             Firebase recordingRef = dbRef.child("recordings").child(recordingName);
-            Recording r=new Recording(filename, sharedPreferences.getString("userEmail",""), category, description); //PASS CORRECT USERNAME
+            Recording r=new Recording(recordingName, filename, sharedPreferences.getString("userEmail",""), category, description); //PASS CORRECT USERNAME
             recordingRef.setValue(r);
         }
 
+        Toast.makeText(getApplicationContext(), "Successfully uploaded", Toast.LENGTH_SHORT).show();
     }
 
     //dialog to make sure user wants to overrite their recording
