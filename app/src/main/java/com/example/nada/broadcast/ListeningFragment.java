@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RatingBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 ///**
@@ -88,6 +92,7 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_listening, container, false);
 
+
         final TextView description = (TextView) view.findViewById(R.id.recordingDesc);
         try{ //null pointer exception throw if description is not passed which is the case when nothing is currently playing
             String recTitle=getArguments().getString("recTitle");
@@ -121,6 +126,11 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
             }); //end of query
 
         }catch (Exception e){
+
+            setNavBar();
+            ImageButton homebutton = (ImageButton) getActivity().findViewById(R.id.buttonhome);
+            homebutton.setImageResource(R.drawable.ic_home_blue);
+
             Toast.makeText(getContext(), "Nothing currently playing!", Toast.LENGTH_SHORT).show();
             FragmentTransaction tran=getActivity().getSupportFragmentManager().beginTransaction();
             tran.replace(R.id.fragcontent, ((Home)getActivity()).browse );
@@ -249,7 +259,7 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.playAudioButton:
-                playAudio();
+                playAudio(v);
                 break;
             case R.id.pauseAudioButton:
                 pauseAudio();
@@ -261,8 +271,9 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
     }
 
     //play audio
-    public void playAudio(){
-        MediaPlayer player;
+    public void playAudio(View view){
+
+        final MediaPlayer player;
         player = new MediaPlayer();
 
 //        FragmentManager.BackStackEntry backEntry = getFragmentManager().getBackStackEntryAt(getActivity().getFragmentManager().getBackStackEntryCount()-1);
@@ -272,13 +283,34 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
         String fileName=fileDescription.substring(fileDescription.indexOf("/"));
         if(fileName != null) {
             try {
-                player.setDataSource(fileName); //playing the extracted file name
+                player.setDataSource(fileName);//playing the extracted file name
+
+//                SeekBar playingbar = (SeekBar) getActivity().findViewById(R.id.playingbar);
+//                playingbar.setMax(player.getDuration());
+
                 player.prepare();
                 player.start();
+
+//                final Handler mHandler = new Handler();
+////Make sure you update Seekbar on UI thread
+//                getActivity().runOnUiThread(new Runnable() {
+//
+//                    @Override
+//                    public void run() {
+//                        if(player != null){
+//                            int mCurrentPosition = player.getCurrentPosition() / 1000;
+//                            playingbar.setProgress(mCurrentPosition);
+//                        }
+//                        mHandler.postDelayed(this, 1000);
+//                    }
+//                });
             } catch (IOException e) {
                 Log.e("AudioTest", "prepare() failed");
             }
         }
+
+
+
     }
 
     //pauses current audio file
@@ -377,6 +409,20 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 //
 //
 //        return false;
+    }
+
+    public void setNavBar(){
+        ImageButton homebutton = (ImageButton) getActivity().findViewById(R.id.buttonhome);
+        homebutton.setImageResource(R.drawable.ic_home);
+
+        ImageButton nowplayingbutton = (ImageButton) getActivity().findViewById(R.id.buttonnp);
+        nowplayingbutton.setImageResource(R.drawable.ic_nowplaying);
+
+        ImageButton favouritebutton = (ImageButton) getActivity().findViewById(R.id.buttonfav);
+        favouritebutton.setImageResource(R.drawable.ic_favourites);
+
+        ImageButton profilebutton = (ImageButton) getActivity().findViewById(R.id.buttonprofile);
+        profilebutton.setImageResource(R.drawable.ic_profile);
     }
 
 
