@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
@@ -58,14 +59,22 @@ public class Home extends FragmentActivity {
                     return;
                 }
 
+            ImageButton homebutton = (ImageButton) findViewById(R.id.buttonhome);
+            homebutton.setImageResource(R.drawable.ic_home_blue);
+
                 browse.setArguments(getIntent().getExtras());
                 getSupportFragmentManager().beginTransaction().add(R.id.fragcontent, browse).commit();
             }
+
     }
 
 
     //navigates to the browse page (fragment)
     public void toBrowsePage(View view){
+
+        setNavBar();
+        ImageButton home = (ImageButton) findViewById(R.id.buttonhome);
+        home.setImageResource(R.drawable.ic_home_blue);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragcontent, browse);
@@ -75,6 +84,10 @@ public class Home extends FragmentActivity {
 
     //navigates to the listening page (fragment for now, will make into activity)
     public void toListeningPage(View view){
+
+        setNavBar();
+        ImageButton nowplaying = (ImageButton) findViewById(R.id.buttonnp);
+        nowplaying.setImageResource(R.drawable.ic_nowplaying_blue);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragcontent, listening);
@@ -112,6 +125,10 @@ public class Home extends FragmentActivity {
 
     //navigates to the favourites page (fragment)
     public void toFavouritesPage(View view){
+
+        setNavBar();
+        ImageButton favouritebutton = (ImageButton) findViewById(R.id.buttonfav);
+        favouritebutton.setImageResource(R.drawable.ic_favourites_blue);
 
         if(dbRef.getAuth()!=null) { //you are signed in
             isLoggedIn = true;
@@ -173,4 +190,20 @@ public class Home extends FragmentActivity {
 //        transaction.addToBackStack(null);
 //        transaction.commit();
     }
+
+    //makes all icons in nav white
+    public void setNavBar(){
+        ImageButton homebutton = (ImageButton) findViewById(R.id.buttonhome);
+        homebutton.setImageResource(R.drawable.ic_home);
+
+        ImageButton nowplayingbutton = (ImageButton) findViewById(R.id.buttonnp);
+        nowplayingbutton.setImageResource(R.drawable.ic_nowplaying);
+
+        ImageButton favouritebutton = (ImageButton) findViewById(R.id.buttonfav);
+        favouritebutton.setImageResource(R.drawable.ic_favourites);
+
+        ImageButton profilebutton = (ImageButton) findViewById(R.id.buttonprofile);
+        profilebutton.setImageResource(R.drawable.ic_profile);
+    }
+
 }
