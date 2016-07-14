@@ -9,56 +9,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.nada.broadcast.Record">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/frameLayout2">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Play"
-            android:id="@+id/playButton"
-            android:layout_gravity="right|center_vertical"
-            android:onClick="startPlaying"/>
-
-        <ImageButton
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:id="@+id/recordButton"
-            android:layout_gravity="left|top"
-            android:src="@mipmap/ic_record"
-            android:onClick="startRecording"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Stop"
-            android:id="@+id/stopButton"
-            android:layout_gravity="right|bottom"
-            android:onClick="stopRecording"/>
-    </FrameLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Upload"
-        android:id="@+id/upload"
-        android:layout_gravity="right|center_vertical"
-        android:onClick="uploadFile"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/recordingName"
-        android:layout_below="@+id/frameLayout2"
-        android:layout_alignParentStart="true"
-        android:hint="Title" />
-
     <!--EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,21 +17,98 @@
         android:layout_alignParentStart="true"
         android:hint="Category" /-->
 
-    <Spinner
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/category"
-        android:layout_below="@+id/recordingName"
-        android:layout_alignParentStart="true"
-        android:entries="@array/category"
-        android:clickable="false" />
+        android:layout_height="match_parent">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/description"
-        android:layout_below="@+id/category"
-        android:layout_alignEnd="@+id/category"
-        android:hint="Description" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/frameLayout2">
+
+            <ImageButton
+                android:layout_width="170dp"
+                android:layout_height="170dp"
+                android:id="@+id/recordButton"
+                android:layout_gravity="top|center_horizontal"
+                android:src="@drawable/record"
+                android:onClick="startRecording"
+                android:scaleType="fitCenter"
+                android:background="#00ffffff" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:id="@+id/playcontrols"
+            android:visibility="gone">
+
+            <ImageButton
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:id="@+id/playButton"
+                android:layout_gravity="left|top"
+                android:src="@drawable/play"
+                android:onClick="startPlaying"
+                android:scaleType="fitCenter"
+                android:background="#00ffffff"
+                android:layout_marginRight="10dp" />
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/stopButton"
+                android:src="@drawable/stop"
+                android:onClick="stopPlaying"
+                android:scaleType="fitCenter"
+                android:background="#00ffffff"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recordingName"
+            android:layout_below="@+id/frameLayout2"
+            android:layout_alignParentStart="true"
+            android:hint="Title"
+            android:layout_marginTop="10dp" />
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/category"
+            android:layout_below="@+id/recordingName"
+            android:layout_alignParentStart="true"
+            android:entries="@array/category"
+            android:clickable="false" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/description"
+            android:layout_below="@+id/category"
+            android:layout_alignEnd="@+id/category"
+            android:hint="Description" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload"
+            android:id="@+id/upload"
+            android:layout_gravity="center_horizontal"
+            android:onClick="uploadFile"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp" />
+    </LinearLayout>
 
 </RelativeLayout>
