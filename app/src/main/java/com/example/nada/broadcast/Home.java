@@ -30,6 +30,7 @@ public class Home extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("inside onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -129,7 +130,7 @@ public class Home extends FragmentActivity {
             //pass the string name of the page that the user wants to navigate to, to the login page so the login page can
             //redirect the user there after successfuly logging in. (The login page uses a switch statement)
             //to navigate to the correct page
-            login.putExtra("Intent", "favourites");
+            //login.putExtra("Intent", "favourites");
             startActivity(login);
         }
         else{

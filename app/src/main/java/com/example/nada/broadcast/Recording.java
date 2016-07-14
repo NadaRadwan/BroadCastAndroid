@@ -10,6 +10,7 @@ public class Recording {
     String category;
     String description;
     int rating;
+    int numRaters;
 
     public Recording(String title, String fileName, String email, String category, String description) {
         this.title=title;
@@ -18,6 +19,7 @@ public class Recording {
         this.category=category;
         this.description=description;
         this.rating = 0;
+        this.numRaters=0;
     }
 
     public String getTitle(){return this.title;}
@@ -29,6 +31,8 @@ public class Recording {
     public int getRating() {
         return this.rating;
     }
+
+    public int getNumRaters(){return this.numRaters;}
 
     public String getCategory() {
         return this.category;
@@ -50,5 +54,12 @@ public class Recording {
     public String shortDescription() {
         //i took out the rating
         return  "Title: "+this.title + ";\n";
+    }
+
+    public String displayOnForm(){
+        return  "Title: "+this.title + "\n"
+                + "UserName:" +"\n"
+                + "Category: " + this.category + "\n"
+                + "Description: " + this.description + "\n";
     }
 }

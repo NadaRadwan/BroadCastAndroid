@@ -86,108 +86,122 @@ public class FavouritesFragment extends Fragment {
             return getView() ;
         }
 
-        // querying database to get all recordings in this specific category
-        Firebase favRef = new Firebase("https://broadcast11.firebaseio.com/favourites/");
-        Query queryRef = favRef.orderByChild("email").equalTo(sharedPreferences.getString("userEmail","")); //looking for user with specified email address
-        queryRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot snapshot, String previousChild) {
-                Map<String, Object> favourite = (Map<String, Object>) snapshot.getValue();
-                //adding to list
-                String recTitle = favourite.get("favourite").toString();
-                recordings.add(recTitle);
-                adapter = new ArrayAdapter<>(
-                        getActivity(),
-                        android.R.layout.simple_list_item_1,
-                        recordings);
+            // querying database to get all recordings in this specific category
+            Firebase favRef = new Firebase("https://broadcast11.firebaseio.com/favourites/");
+            Query queryRef = favRef.orderByChild("email").equalTo(sharedPreferences.getString("userEmail", "")); //looking for user with specified email address
+            queryRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                    Map<String, Object> favourite = (Map<String, Object>) snapshot.getValue();
+                    //adding to list
+                    String recTitle = favourite.get("favourite").toString();
+                    recordings.add(recTitle);
+                    adapter = new ArrayAdapter<>(
+                            getActivity(),
+                            android.R.layout.simple_list_item_1,
+                            recordings);
 
-                ListView l = (ListView) view.findViewById(R.id.favouritesList);
-                l.setAdapter(adapter);
-            }
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+                    ListView l = (ListView) view.findViewById(R.id.favouritesList);
+                    l.setAdapter(adapter);
+                }
 
-            // Get the data on a post that has been removed
-            @Override
-            public void onChildRemoved(DataSnapshot snapshot) {}
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    System.out.println("The read failed: " + firebaseError.getMessage());
+                }
 
-            // Get the data on a post that has changed
-            @Override
-            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
-                Map<String, Object> favourite = (Map<String, Object>) snapshot.getValue();
-                //adding to list
-                String recTitle = favourite.get("favourite").toString();
-                recordings.add(recTitle);
-                adapter = new ArrayAdapter<>(
-                        getActivity(),
-                        android.R.layout.simple_list_item_1,
-                        recordings);
+                // Get the data on a post that has been removed
+                @Override
+                public void onChildRemoved(DataSnapshot snapshot) {
+                }
 
-                ListView l = (ListView) view.findViewById(R.id.favouritesList);
-                l.setAdapter(adapter);
-            }
+                // Get the data on a post that has changed
+                @Override
+                public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                    Map<String, Object> favourite = (Map<String, Object>) snapshot.getValue();
+                    //adding to list
+                    String recTitle = favourite.get("favourite").toString();
+                    recordings.add(recTitle);
+                    adapter = new ArrayAdapter<>(
+                            getActivity(),
+                            android.R.layout.simple_list_item_1,
+                            recordings);
 
-            @Override
-            public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
-        }); //end of query
-        //detecting which recording from the recording list is pressed
-        // ListView on item selected listener.
+                    ListView l = (ListView) view.findViewById(R.id.favouritesList);
+                    l.setAdapter(adapter);
+                }
 
-        ListView li= (ListView) view.findViewById(R.id.favouritesList);
-        li.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                String recordingName=((TextView) view).getText().toString();
-                System.out.println("recodingName is "+recordingName);
+                @Override
+                public void onChildMoved(DataSnapshot snapshot, String previousChildKey) {
+                }
+            }); //end of query
+            //detecting which recording from the recording list is pressed
+            // ListView on item selected listener.
 
-            //we need the recFullDescription
-                // querying database to get all recordings in this specific category
-                Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
-                Query queryRef = userRef.orderByChild("title").equalTo(recordingName); //looking for user with specified email address
-                queryRef.addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot snapshot, String previousChild) {
-                        Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
-                        //adding to list
-                        Recording r=new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
+            ListView li = (ListView) view.findViewById(R.id.favouritesList);
+            li.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    String recordingName = ((TextView) view).getText().toString();
+                    System.out.println("recodingName is " + recordingName);
 
-                        String recFullDescription=r.longDescription();
-                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    //we need the recFullDescription
+                    // querying database to get all recordings in this specific category
+                    Firebase userRef = new Firebase("https://broadcast11.firebaseio.com/recordings/");
+                    Query queryRef = userRef.orderByChild("title").equalTo(recordingName); //looking for user with specified email address
+                    queryRef.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(DataSnapshot snapshot, String previousChild) {
+                            if(getActivity()==null){
+                                //to prevent calling the database when the fragment is detached from the Home activity which crashes the activity
+                            }else {
+                                Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
+                                //adding to list
+                                Recording r = new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
 
-                        ((Home) getActivity()).listening = new ListeningFragment();
-//                ListeningFragment listening = new ListeningFragment();
-                        Bundle info = new Bundle();
-//                info.putString("description", recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1));
-                        info.putString("description", recFullDescription);
-                        info.putString("fileName", recording.get("title").toString());
-                        ((Home) getActivity()).listening.setArguments(info);
-//                listening.setArguments(info);
+                                String recFullDescription = r.longDescription();
+                                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 
-                        transaction.replace(R.id.fragcontent, ((Home) getActivity()).listening);
-//                transaction.replace(R.id.fragcontent, listening);
-                        transaction.addToBackStack(null);
-                        transaction.commit();
+                                ((Home) getActivity()).listening = new ListeningFragment();
+                                //                ListeningFragment listening = new ListeningFragment();
+                                Bundle info = new Bundle();
+                                //                info.putString("description", recordingDesc.substring(recordingDesc.indexOf("/"), recordingDesc.indexOf("p")+1));
+                                info.putString("description", recFullDescription);
+                                info.putString("recTitle", recording.get("title").toString());
+                                ((Home) getActivity()).listening.setArguments(info);
+                                //                listening.setArguments(info);
 
-                    }
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
+                                transaction.replace(R.id.fragcontent, ((Home) getActivity()).listening);
+                                //                transaction.replace(R.id.fragcontent, listening);
+                                transaction.addToBackStack(null);
+                                transaction.commit();
+                            }
 
-                    // Get the data on a post that has been removed
-                    @Override
-                    public void onChildRemoved(DataSnapshot snapshot) {}
+                        }
 
-                    // Get the data on a post that has changed
-                    @Override
-                    public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {}
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                            System.out.println("The read failed: " + firebaseError.getMessage());
+                        }
 
-                    @Override
-                    public void onChildMoved(DataSnapshot snapshot, String previousChildKey){}
-                }); //end of query
+                        // Get the data on a post that has been removed
+                        @Override
+                        public void onChildRemoved(DataSnapshot snapshot) {
+                        }
 
-            }
-        });
+                        // Get the data on a post that has changed
+                        @Override
+                        public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                        }
+
+                        @Override
+                        public void onChildMoved(DataSnapshot snapshot, String previousChildKey) {
+                        }
+                    }); //end of query
+
+                }
+            });
 
 
         return view;
