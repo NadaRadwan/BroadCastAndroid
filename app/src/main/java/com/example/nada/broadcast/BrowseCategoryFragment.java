@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -150,6 +151,10 @@ public class BrowseCategoryFragment extends Fragment{
                     }
                 }
 
+                setNavBar();
+                ImageButton nowplayingbutton = (ImageButton) getActivity().findViewById(R.id.buttonnp);
+                nowplayingbutton.setImageResource(R.drawable.ic_nowplaying_blue);
+
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 
                 ((Home) getActivity()).listening = new ListeningFragment();
@@ -172,6 +177,20 @@ public class BrowseCategoryFragment extends Fragment{
 
         return view;
 
+    }
+
+    public void setNavBar(){
+        ImageButton homebutton = (ImageButton) getActivity().findViewById(R.id.buttonhome);
+        homebutton.setImageResource(R.drawable.ic_home);
+
+        ImageButton nowplayingbutton = (ImageButton) getActivity().findViewById(R.id.buttonnp);
+        nowplayingbutton.setImageResource(R.drawable.ic_nowplaying);
+
+        ImageButton favouritebutton = (ImageButton) getActivity().findViewById(R.id.buttonfav);
+        favouritebutton.setImageResource(R.drawable.ic_favourites);
+
+        ImageButton profilebutton = (ImageButton) getActivity().findViewById(R.id.buttonprofile);
+        profilebutton.setImageResource(R.drawable.ic_profile);
     }
 
 
