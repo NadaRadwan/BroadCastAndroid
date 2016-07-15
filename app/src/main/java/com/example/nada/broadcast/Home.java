@@ -59,12 +59,12 @@ public class Home extends FragmentActivity {
                     return;
                 }
 
+            ImageButton homebutton = (ImageButton) findViewById(R.id.buttonhome);
+            homebutton.setImageResource(R.drawable.ic_home_blue);
+
                 browse.setArguments(getIntent().getExtras());
                 getSupportFragmentManager().beginTransaction().add(R.id.fragcontent, browse).commit();
             }
-
-        ImageButton homebutton = (ImageButton) findViewById(R.id.buttonhome);
-        homebutton.setImageResource(R.drawable.ic_home_blue);
     }
 
 

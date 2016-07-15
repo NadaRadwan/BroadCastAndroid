@@ -51,6 +51,7 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 
     Firebase dbRef; //reference to the database
     SharedPreferences sharedpreferences;
+    private static MediaPlayer player;
 
 
     public ListeningFragment() {
@@ -91,6 +92,9 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
                              final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_listening, container, false);
+//
+//        ImageButton pauseaudiobutton = (ImageButton) view.findViewById(R.id.pauseAudioButton);
+//        pauseaudiobutton.setVisibility(View.GONE);
 
 
         final TextView description = (TextView) view.findViewById(R.id.recordingDesc);
@@ -108,8 +112,23 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
                     Map<String, Object> recording = (Map<String, Object>) snapshot.getValue();
                     Recording r=new Recording(recording.get("title").toString(), recording.get("filename").toString(), recording.get("email").toString(), recording.get("category").toString(), recording.get("description").toString());
                     description.setText(r.displayOnForm());
-                    final TextView rrating = (TextView) getView().findViewById(R.id.RecordingRating);
-                    rrating.setText("rating: "+recording.get("rating").toString());
+                    TextView rrating = (TextView) getView().findViewById(R.id.RecordingRating);
+
+                    String numStars="";
+                    int fullStars=Math.round(Float.parseFloat(recording.get("rating").toString()));
+                    int emptyStars=5-fullStars;
+                        while (fullStars > 0) {
+                            numStars += "★";
+                            fullStars--;
+                        }
+                        while (emptyStars > 0) {
+                            numStars += "☆";
+                            emptyStars--;
+                        }
+                        rrating.setText(numStars);
+
+                    //sr.setRating(Float.parseFloat(recording.get("rating").toString()));
+                    //System.out.println("set the rating to"+ Float.parseFloat(recording.get("rating").toString()));
                 }
                 @Override
                 public void onCancelled(FirebaseError firebaseError) {System.out.println("The read failed: " + firebaseError.getMessage());}
@@ -262,7 +281,7 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
                 playAudio(v);
                 break;
             case R.id.pauseAudioButton:
-                pauseAudio();
+                pauseAudio(v);
                 break;
             case R.id.addFavButton:
                 addRemoveFavourites(v);
@@ -270,10 +289,9 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-    //play audio
+    //play and pause audio
     public void playAudio(View view){
-
-        final MediaPlayer player;
+        //final MediaPlayer player;
         player = new MediaPlayer();
 
 //        FragmentManager.BackStackEntry backEntry = getFragmentManager().getBackStackEntryAt(getActivity().getFragmentManager().getBackStackEntryCount()-1);
@@ -290,6 +308,11 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 
                 player.prepare();
                 player.start();
+
+//                ImageButton playaudiobutton = (ImageButton) view.findViewById(R.id.playAudioButton);
+//                playaudiobutton.setVisibility(View.GONE);
+//                ImageButton pauseaudiobutton = (ImageButton) view.findViewById(R.id.pauseAudioButton);
+//                pauseaudiobutton.setVisibility(View.VISIBLE);
 
 //                final Handler mHandler = new Handler();
 ////Make sure you update Seekbar on UI thread
@@ -314,8 +337,16 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
     }
 
     //pauses current audio file
-    public void pauseAudio(){
+    public void pauseAudio(View v){
         //to implement
+
+        player.release();
+        player = null;
+
+//        ImageButton playaudiobutton = (ImageButton) v.findViewById(R.id.playAudioButton);
+//        playaudiobutton.setVisibility(View.VISIBLE);
+//        ImageButton pauseaudiobutton = (ImageButton) v.findViewById(R.id.pauseAudioButton);
+//        pauseaudiobutton.setVisibility(View.GONE);
     }
 
     //adds or removes current file to or from user's favourites

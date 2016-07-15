@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.app.AlertDialog;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -29,8 +30,8 @@ public class Record extends AppCompatActivity {
     private static MediaPlayer player;
 
     private static String filename;
-    private static Button stopButton;
-    private static Button playButton;
+    private static ImageButton stopButton;
+    private static ImageButton playButton;
     private static ImageButton recordButton;
 
 
@@ -53,8 +54,8 @@ public class Record extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        stopButton = (Button) findViewById(R.id.stopButton);
-        playButton = (Button) findViewById(R.id.playButton);
+        stopButton = (ImageButton) findViewById(R.id.stopButton);
+        playButton = (ImageButton) findViewById(R.id.playButton);
         recordButton = (ImageButton) findViewById(R.id.recordButton);
 
         filename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/myaudio"+(numRec++)+".3gp";
@@ -79,45 +80,68 @@ public class Record extends AppCompatActivity {
 //        }
 //    }
 
+    //start and stop recording
     public void startRecording(View view) throws IOException{
-        isRecording = true;
-        stopButton.setEnabled(true);
-        playButton.setEnabled(false);
-        recordButton.setEnabled(false);
+        if (!isRecording){
+            Toast.makeText(getApplicationContext(), "Started Recording", Toast.LENGTH_SHORT).show();
+            recordButton.setImageResource(R.drawable.recordpressed);
 
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        recorder.setOutputFile(filename);
+            isRecording = true;
+            stopButton.setEnabled(true);
+            playButton.setEnabled(false);
 
-        try{
-            recorder.prepare();
-            recorder.start();
+            recorder = new MediaRecorder();
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            recorder.setOutputFile(filename);
+
+            try{
+                recorder.prepare();
+                recorder.start();
+            }
+            catch (IOException e){
+                Log.e("RecordTest", "prepare() failed");
+            }
         }
-        catch (IOException e){
-            Log.e("RecordTest", "prepare() failed");
+        else {
+            Toast.makeText(getApplicationContext(), "Stopped Recording", Toast.LENGTH_SHORT).show();
+            stopButton.setEnabled(false);
+            playButton.setEnabled(true);
+
+            recordButton.setImageResource(R.drawable.record);
+
+                recordButton.setEnabled(false);
+                recorder.stop();
+                recorder.release();
+                recorder = null; //free memory space?
+                isRecording = false;
+
+            LinearLayout playcontrols = (LinearLayout) findViewById(R.id.playcontrols);
+            playcontrols.setVisibility(View.VISIBLE);
         }
+
+
 
     }
 
-    public void stopRecording(View view){
+    public void stopPlaying(View view){
 
         stopButton.setEnabled(false);
         playButton.setEnabled(true);
 
-        if (isRecording){
-            recordButton.setEnabled(false);
-            recorder.stop();
-            recorder.release();
-            recorder = null; //free memory space?
-            isRecording = false;
-        }
-        else {
+//        if (isRecording){
+//            recordButton.setEnabled(false);
+//            recorder.stop();
+//            recorder.release();
+//            recorder = null; //free memory space?
+//            isRecording = false;
+//        }
+//        else {
             player.release();
             player = null;
             recordButton.setEnabled(true);
-        }
+//        }
     }
 
     public void startPlaying(View view) throws IOException{
@@ -154,9 +178,8 @@ public class Record extends AppCompatActivity {
             Firebase recordingRef = dbRef.child("recordings").child(recordingName);
             Recording r=new Recording(recordingName, filename, sharedPreferences.getString("userEmail",""), category, description); //PASS CORRECT USERNAME
             recordingRef.setValue(r);
+            Toast.makeText(getApplicationContext(), "Successfully uploaded", Toast.LENGTH_SHORT).show();
         }
-
-        Toast.makeText(getApplicationContext(), "Successfully uploaded", Toast.LENGTH_SHORT).show();
     }
 
     //dialog to make sure user wants to overrite their recording

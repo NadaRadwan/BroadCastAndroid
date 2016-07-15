@@ -53,7 +53,7 @@ public class Recording {
 
     public String shortDescription() {
         //i took out the rating
-        return  "Title: "+this.title + ";\n";
+        return  "Title: "+this.title + "\n";
     }
 
     public String displayOnForm(){

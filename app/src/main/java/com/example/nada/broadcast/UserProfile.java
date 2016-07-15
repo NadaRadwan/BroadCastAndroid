@@ -55,7 +55,8 @@ public class UserProfile extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChild) {
                 Map<String, Object> user = (Map<String, Object>) snapshot.getValue();
-                rating.setText("Current Rating: " + user.get("rating"));
+                //rating.setText("Current Rating: " + user.get("rating")); //IMPLEMENT THIS PROPERLY
+                rating.setText("Current Rating: ☆☆☆☆☆" );
                 welcome.setText("Welcome "+snapshot.getKey()+"!");
             }
             @Override

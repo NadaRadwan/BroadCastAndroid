@@ -56,6 +56,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         //creating an instance of the database
         dbRef=new Firebase("https://broadcast11.firebaseio.com/");
         sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
