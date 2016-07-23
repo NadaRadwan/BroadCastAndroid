@@ -249,7 +249,7 @@ public class Record extends AppCompatActivity {
         AlertDialog.Builder alertDialog1 = new AlertDialog.Builder(Record.this);
         //alertDialog1.setTitle("You will lose your recording i");
 
-        alertDialog1.setMessage("You will lose your recording if you go back. Are you sure?")
+        alertDialog1.setMessage("You will lose your recording if you go back. Are you sure you want to go back?")
                 .setPositiveButton("Go Back", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
