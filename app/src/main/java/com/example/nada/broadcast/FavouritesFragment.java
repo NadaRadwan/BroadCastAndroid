@@ -14,6 +14,7 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,7 +32,9 @@ public class FavouritesFragment extends Fragment {
     SharedPreferences sharedPreferences;
     protected ArrayList<String> recordings = new ArrayList<>();
     protected ArrayList<Recording> recordingsLongDesc = new ArrayList<>();
-    protected ArrayAdapter<String> adapter; //used to populate the list view
+    protected FavouriteAdapter adapter; //used to populate the list view
+
+
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
@@ -97,9 +100,9 @@ public class FavouritesFragment extends Fragment {
                     //adding to list
                     String recTitle = favourite.get("favourite").toString();
                     recordings.add(recTitle);
-                    adapter = new ArrayAdapter<>(
+                    adapter = new FavouriteAdapter(
                             getActivity(),
-                            android.R.layout.simple_list_item_1,
+                            R.layout.listitem,
                             recordings);
 
                     ListView l = (ListView) view.findViewById(R.id.favouritesList);
@@ -123,9 +126,9 @@ public class FavouritesFragment extends Fragment {
                     //adding to list
                     String recTitle = favourite.get("favourite").toString();
                     recordings.add(recTitle);
-                    adapter = new ArrayAdapter<>(
+                    adapter = new FavouriteAdapter(
                             getActivity(),
-                            android.R.layout.simple_list_item_1,
+                            R.layout.listitem,
                             recordings);
 
                     ListView l = (ListView) view.findViewById(R.id.favouritesList);
@@ -144,7 +147,7 @@ public class FavouritesFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
-                    String recordingName = ((TextView) view).getText().toString();
+                    String recordingName = ((TextView)((LinearLayout) view).getChildAt(0)).getText().toString();
                     System.out.println("recodingName is " + recordingName);
 
                     //we need the recFullDescription

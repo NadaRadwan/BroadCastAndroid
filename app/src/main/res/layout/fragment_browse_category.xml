@@ -10,6 +10,9 @@
             android:id="@+id/recordingsList"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
-            android:choiceMode="singleChoice" />
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="15dp"
+            android:layout_margin="15dp"/>
 
 </FrameLayout>

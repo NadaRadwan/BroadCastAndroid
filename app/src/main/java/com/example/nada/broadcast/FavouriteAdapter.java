@@ -6,25 +6,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.nada.broadcast.R;
+import com.example.nada.broadcast.Recording;
 
 import java.util.ArrayList;
 
 /**
- * Created by Nada on 2016-07-14.
+ * Created by Shanzay on 2016-07-20.
  */
-public class RecordingAdapter extends ArrayAdapter<Recording> {
+public class FavouriteAdapter extends ArrayAdapter<String> {
 
-    ArrayList<Recording> data = null;
+    ArrayList<String> data = null;
     Context context;
     int layoutResourceId;
 
-    public RecordingAdapter(Context context, int layoutResourceId, ArrayList<Recording> data){
+    public FavouriteAdapter(Context context, int layoutResourceId, ArrayList<String> data){
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
         this.data = data;
+
     }
 
     @Override
@@ -47,8 +50,9 @@ public class RecordingAdapter extends ArrayAdapter<Recording> {
             holder = (RecordingHolder)row.getTag();
         }
 
-        Recording recording = getItem(position);
-        holder.txt.setText(recording.title);
+//        Recording recording = getItem(position);
+        String item = getItem(position);
+        holder.txt.setText(item.toString());
 
         return row;
     }

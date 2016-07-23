@@ -51,8 +51,7 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
 
     Firebase dbRef; //reference to the database
     SharedPreferences sharedpreferences;
-    private static MediaPlayer player;
-
+    private static MediaPlayer player = new MediaPlayer();
 
     public ListeningFragment() {
         // Required empty public constructor
@@ -292,44 +291,60 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
     //play and pause audio
     public void playAudio(View view){
         //final MediaPlayer player;
-        player = new MediaPlayer();
+
 
 //        FragmentManager.BackStackEntry backEntry = getFragmentManager().getBackStackEntryAt(getActivity().getFragmentManager().getBackStackEntryCount()-1);
 //        String str=backEntry.getName().toLowerCase();
         //Fragment fragment=getFragmentManager().findFragmentByTag(str);
         String fileDescription=getArguments().getString("description");
         String fileName=fileDescription.substring(fileDescription.indexOf("/"));
-        if(fileName != null) {
-            try {
-                player.setDataSource(fileName);//playing the extracted file name
 
-//                SeekBar playingbar = (SeekBar) getActivity().findViewById(R.id.playingbar);
-//                playingbar.setMax(player.getDuration());
+        ImageButton playaudiobutton = (ImageButton) view.findViewById(R.id.playAudioButton);
 
-                player.prepare();
-                player.start();
+        if(player.isPlaying()) {
+            Toast.makeText(getActivity().getApplicationContext(), "true", Toast.LENGTH_SHORT).show();
+            player.pause();
+            playaudiobutton.setImageResource(R.drawable.play);
 
-//                ImageButton playaudiobutton = (ImageButton) view.findViewById(R.id.playAudioButton);
-//                playaudiobutton.setVisibility(View.GONE);
-//                ImageButton pauseaudiobutton = (ImageButton) view.findViewById(R.id.pauseAudioButton);
-//                pauseaudiobutton.setVisibility(View.VISIBLE);
+            //player = null;
 
-//                final Handler mHandler = new Handler();
-////Make sure you update Seekbar on UI thread
-//                getActivity().runOnUiThread(new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-//                        if(player != null){
-//                            int mCurrentPosition = player.getCurrentPosition() / 1000;
-//                            playingbar.setProgress(mCurrentPosition);
-//                        }
-//                        mHandler.postDelayed(this, 1000);
-//                    }
-//                });
-            } catch (IOException e) {
-                Log.e("AudioTest", "prepare() failed");
+        }
+        else{
+
+            if(fileName != null) {
+                try {
+                    player.setDataSource(fileName);//playing the extracted file name
+
+    //                SeekBar playingbar = (SeekBar) getActivity().findViewById(R.id.playingbar);
+    //                playingbar.setMax(player.getDuration());
+
+                    player.prepare();
+                    player.start();
+                    playaudiobutton.setImageResource(R.drawable.stop);
+
+    //                ImageButton playaudiobutton = (ImageButton) view.findViewById(R.id.playAudioButton);
+    //                playaudiobutton.setVisibility(View.GONE);
+    //                ImageButton pauseaudiobutton = (ImageButton) view.findViewById(R.id.pauseAudioButton);
+    //                pauseaudiobutton.setVisibility(View.VISIBLE);
+
+    //                final Handler mHandler = new Handler();
+    ////Make sure you update Seekbar on UI thread
+    //                getActivity().runOnUiThread(new Runnable() {
+    //
+    //                    @Override
+    //                    public void run() {
+    //                        if(player != null){
+    //                            int mCurrentPosition = player.getCurrentPosition() / 1000;
+    //                            playingbar.setProgress(mCurrentPosition);
+    //                        }
+    //                        mHandler.postDelayed(this, 1000);
+    //                    }
+    //                });
+                } catch (IOException e) {
+                    Log.e("AudioTest", "prepare() failed");
+                }
             }
+
         }
 
 

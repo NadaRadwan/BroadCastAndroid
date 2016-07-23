@@ -11,7 +11,8 @@
         android:layout_alignParentTop="true"
         android:id="@+id/fragcontent"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/tableLayout">
+        android:layout_above="@+id/tableLayout"
+        android:background="@color/background">
     </FrameLayout>
 
     <TableLayout
@@ -20,7 +21,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@color/menu"
-        android:id="@+id/tableLayout">
+        android:id="@+id/tableLayout"
+        android:stretchColumns="*">
 
         <TableRow
             android:layout_width="match_parent"
