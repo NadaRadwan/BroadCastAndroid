@@ -5,8 +5,8 @@
     <color name="colorAccent">#33B5E5</color>
     <color name="browse">#cde4e8</color>
     <color name="menu">#707577</color>
-    <color name="background">#ebf1f5</color>
-    <color name="pressed">#dde2e5</color>
+    <color name="background">#f6f8f9</color>
+    <color name="pressed">#eff2f3</color>
     <color name="button">#ffffff</color>
     <color name="transparent">#00ffffff</color>
 </resources>

@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.media.MediaRecorder;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +36,9 @@ public class Record extends AppCompatActivity {
     private static ImageButton playButton;
     private static ImageButton recordButton;
 
+    public String file;
+    public boolean hasRecorded;
+
 
     private boolean isRecording = false;
     Firebase dbRef; //reference to the database
@@ -45,6 +50,8 @@ public class Record extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
+
+        hasRecorded = false;
 
         //referencing the db
         dbRef=new Firebase("https://broadcast11.firebaseio.com/");
@@ -58,8 +65,56 @@ public class Record extends AppCompatActivity {
         playButton = (ImageButton) findViewById(R.id.playButton);
         recordButton = (ImageButton) findViewById(R.id.recordButton);
 
-        filename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/myaudio"+(numRec++)+".3gp";
+        file = "myaudio"+(numRec++)+".3gp";
+
+        filename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + file;
        // filename=android.os.Environment.getExternalStorageDirectory()+"/myaudio.3gp";
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (hasRecorded){
+            testdialog();
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
+
+    public void goback(){
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (hasRecorded){
+                    testdialog();
+                }
+                else{
+                    super.onBackPressed();
+                }
+                return(true);
+        }
+
+        return(super.onOptionsItemSelected(item));
+    }
+
+    //check if file exists. To remove this method, it does not work to the desired purpose.
+    public boolean checkfile(){
+        String[] files =  Environment.getExternalStorageDirectory().list();
+        Boolean result = false;
+
+        for(int i = 0; i < files.length; i++ ){
+            if (files[i].equalsIgnoreCase(file)){
+                result = true;
+                break;
+            }
+        }
+
+        return result;
     }
 
 //    private void onRecord(boolean start){
@@ -82,7 +137,10 @@ public class Record extends AppCompatActivity {
 
     //start and stop recording
     public void startRecording(View view) throws IOException{
+
         if (!isRecording){
+            hasRecorded = true;//realistically, should this be placed inside the if?
+
             Toast.makeText(getApplicationContext(), "Started Recording", Toast.LENGTH_SHORT).show();
             recordButton.setImageResource(R.drawable.recordpressed);
 
@@ -172,6 +230,9 @@ public class Record extends AppCompatActivity {
         }else if(description.isEmpty()){
             ((EditText) findViewById(R.id.description)).setError("Please enter a description");
         }
+        else if(!hasRecorded){
+            Toast.makeText(getApplicationContext(), "Nothing Recorded. Please record before uploading.", Toast.LENGTH_LONG).show();
+        }
         else{
             //creating entry in recordings table  storing recordingName, recording, userName, rating, category and description
             //primary key is recordingName!
@@ -179,21 +240,23 @@ public class Record extends AppCompatActivity {
             Recording r=new Recording(recordingName, filename, sharedPreferences.getString("userEmail",""), category, description); //PASS CORRECT USERNAME
             recordingRef.setValue(r);
             Toast.makeText(getApplicationContext(), "Successfully uploaded", Toast.LENGTH_SHORT).show();
+            super.onBackPressed();
         }
     }
 
     //dialog to make sure user wants to overrite their recording
-    public void testdialog(View view){
+    public void testdialog(){
         AlertDialog.Builder alertDialog1 = new AlertDialog.Builder(Record.this);
-        alertDialog1.setTitle("Are you sure?");
+        //alertDialog1.setTitle("You will lose your recording i");
 
-        alertDialog1.setMessage("sure?")
-                .setPositiveButton("yup", new DialogInterface.OnClickListener() {
+        alertDialog1.setMessage("You will lose your recording if you go back. Are you sure?")
+                .setPositiveButton("Go Back", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
+                        goback();
                     }
                 })
-                .setNegativeButton("nope", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Stay", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog
                     }
