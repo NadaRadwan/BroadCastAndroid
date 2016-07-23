@@ -117,15 +117,15 @@ public class ListeningFragment extends Fragment implements View.OnClickListener{
                     String numStars="";
                     int fullStars=Math.round(Float.parseFloat(recording.get("rating").toString()));
                     int emptyStars=5-fullStars;
-                        while (fullStars > 0) {
-                            numStars += "★";
-                            fullStars--;
-                        }
-                        while (emptyStars > 0) {
-                            numStars += "☆";
-                            emptyStars--;
-                        }
-                        rrating.setText(numStars);
+                    while (fullStars > 0) {
+                        numStars += "★";
+                        fullStars--;
+                    }
+                    while (emptyStars > 0) {
+                        numStars += "☆";
+                        emptyStars--;
+                    }
+                    rrating.setText(numStars);
 
                     //sr.setRating(Float.parseFloat(recording.get("rating").toString()));
                     //System.out.println("set the rating to"+ Float.parseFloat(recording.get("rating").toString()));

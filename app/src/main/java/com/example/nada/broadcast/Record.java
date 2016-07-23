@@ -20,6 +20,8 @@ import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 
+
+
 import java.io.IOException;
 
 public class Record extends AppCompatActivity {
@@ -179,6 +181,13 @@ public class Record extends AppCompatActivity {
             Recording r=new Recording(recordingName, filename, sharedPreferences.getString("userEmail",""), category, description); //PASS CORRECT USERNAME
             recordingRef.setValue(r);
             Toast.makeText(getApplicationContext(), "Successfully uploaded", Toast.LENGTH_SHORT).show();
+
+            //uploading file onto firebase db-----------------------------------------
+              //StorageReference storageRef = FirebaseStorage.getInstance().reference().child("folderName/file.jpg");
+//            Uri file = Uri.fromFile(new File("path/to/folderName/file.jpg"));
+//            UploadTask uploadTask = storageRef.putFile(file);
+
+
         }
     }
 
